@@ -1,0 +1,16 @@
+{
+  "extends": "tsconfig/base.json",
+  "exclude": ["node_modules", "dist"],
+  "prepublish": "tsc",
+
+  "compilerOptions": {
+    "baseUrl": "./",
+    "disableSizeLimit": true,
+    "incremental": true,
+    "outDir": "dist",
+    "stripInternal": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "lib": ["es2020"]
+  }
+}

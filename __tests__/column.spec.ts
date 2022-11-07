@@ -1,4 +1,4 @@
-import { ColumnSchema, ColumnSchemaCheck } from 'index'
+import { ColumnSchemaCheck, ColumnSchemaString } from 'index'
 
 describe('Column Schema Checker', () => {
   it('check most barebone schema', () => {
@@ -62,7 +62,7 @@ describe('Column Schema Checker', () => {
             type: 'date',
           },
         },
-      } as ColumnSchema),
+      } as ColumnSchemaString),
     ).not.toThrow()
   })
 })

@@ -30,7 +30,7 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
           /**
            * logic to parse, the first parameter is the api and the second is the raw value to be parsed
            */
-          logic: makeFunctionWithAPICell(cellValueSchema, cellValueSchema, z.unknown()),
+          logic: makeFunctionWithAPICell(cellValueSchema, cellValueSchema.optional().nullable(), z.unknown()),
         }),
       )
       .optional(),
@@ -70,43 +70,58 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
   })
 }
 // list all native column types, include it in column type in column/index.ts
-export const ColumnSchemaNumber0_0_1 = makeColumnV0_0_1(z.number(), 'number.0.0.1')
-export const ColumnSchemaString0_0_1 = makeColumnV0_0_1(z.string(), 'string.0.0.1')
-export const ColumnSchemaDate0_0_1 = makeColumnV0_0_1(z.date(), 'date.0.0.1')
-export const ColumnSchemaBoolean0_0_1 = makeColumnV0_0_1(z.boolean(), 'boolean.0.0.1')
+const ColumnSchemaNumber0_0_1 = makeColumnV0_0_1(z.number(), 'number.0.0.1')
+export type ColumnSchemaNumber = z.infer<typeof ColumnSchemaNumber0_0_1>
+const ColumnSchemaString0_0_1 = makeColumnV0_0_1(z.string(), 'string.0.0.1')
+export type ColumnSchemaString = z.infer<typeof ColumnSchemaString0_0_1>
 
-export const ColumnSchemaNumbers0_0_1 = makeColumnV0_0_1(z.array(z.number()), 'number[].0.0.1')
-export const ColumnSchemaStrings0_0_1 = makeColumnV0_0_1(z.array(z.string()), 'string[].0.0.1')
-export const ColumnSchemaDates0_0_1 = makeColumnV0_0_1(z.array(z.date()), 'date[].0.0.1')
-export const ColumnSchemaBooleans0_0_1 = makeColumnV0_0_1(z.array(z.boolean()), 'boolean[].0.0.1')
+const ColumnSchemaDate0_0_1 = makeColumnV0_0_1(z.date(), 'date.0.0.1')
+export type ColumnSchemaDate = z.infer<typeof ColumnSchemaDate0_0_1>
 
-export type ColumnSchema =
-  | z.infer<typeof ColumnSchemaNumber0_0_1>
-  | z.infer<typeof ColumnSchemaString0_0_1>
-  | z.infer<typeof ColumnSchemaDate0_0_1>
-  | z.infer<typeof ColumnSchemaBoolean0_0_1>
-  | z.infer<typeof ColumnSchemaNumbers0_0_1>
-  | z.infer<typeof ColumnSchemaStrings0_0_1>
-  | z.infer<typeof ColumnSchemaDates0_0_1>
-  | z.infer<typeof ColumnSchemaBooleans0_0_1>
+const ColumnSchemaBoolean0_0_1 = makeColumnV0_0_1(z.boolean(), 'boolean.0.0.1')
+export type ColumnSchemaBoolean = z.infer<typeof ColumnSchemaBoolean0_0_1>
 
-export const ColumnSchema: z.ZodType<ColumnSchema> = z.lazy(() =>
+const ColumnSchemaNumbers0_0_1 = makeColumnV0_0_1(z.array(z.number()), 'number[].0.0.1')
+export type ColumnSchemaNumbers = z.infer<typeof ColumnSchemaNumbers0_0_1>
+
+const ColumnSchemaStrings0_0_1 = makeColumnV0_0_1(z.array(z.string()), 'string[].0.0.1')
+export type ColumnSchemaStrings = z.infer<typeof ColumnSchemaStrings0_0_1>
+
+const ColumnSchemaDates0_0_1 = makeColumnV0_0_1(z.array(z.date()), 'date[].0.0.1')
+export type ColumnSchemaDates = z.infer<typeof ColumnSchemaDates0_0_1>
+
+const ColumnSchemaBooleans0_0_1 = makeColumnV0_0_1(z.array(z.boolean()), 'boolean[].0.0.1')
+export type ColumnSchemaBooleans = z.infer<typeof ColumnSchemaBooleans0_0_1>
+
+type ColumnSchema =
+  | ColumnSchemaNumber
+  | ColumnSchemaString
+  | ColumnSchemaDate
+  | ColumnSchemaBoolean
+  | ColumnSchemaNumbers
+  | ColumnSchemaStrings
+  | ColumnSchemaDates
+  | ColumnSchemaBooleans
+
+const ColumnSchema: z.ZodType<ColumnSchema> = z.lazy(() =>
   z.discriminatedUnion('version', [
-    ColumnSchemaString0_0_1,
-    ColumnSchemaNumber0_0_1,
-    ColumnSchemaDate0_0_1,
     ColumnSchemaBoolean0_0_1,
-    ColumnSchemaNumbers0_0_1,
-    ColumnSchemaStrings0_0_1,
-    ColumnSchemaDates0_0_1,
     ColumnSchemaBooleans0_0_1,
+    ColumnSchemaDate0_0_1,
+    ColumnSchemaDates0_0_1,
+    ColumnSchemaNumber0_0_1,
+    ColumnSchemaNumbers0_0_1,
+    ColumnSchemaString0_0_1,
+    ColumnSchemaStrings0_0_1,
   ]),
 )
+
 export class ColumnSchemaError extends Error {
   constructor(public issues: Array<ZodIssue>, public readable: any) {
     super()
   }
 }
+
 export function ColumnSchemaCheck(obj: unknown) {
   try {
     return ColumnSchema.parse(obj)

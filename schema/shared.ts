@@ -2,19 +2,14 @@ import { makeCellAPISchema, makeColumnAPISchema } from 'schema/api'
 import { z, ZodTuple, ZodType } from 'zod'
 
 export function makeFunctionWithAPICell<
-  V extends ZodType,
-  R extends ZodType,
+  Value extends ZodType,
+  Returns extends ZodType,
   Items extends Parameters<typeof ZodTuple['create']>[0],
->(valueSchema: V, returns: R, ...args: Items) {
+>(valueSchema: Value, returns: Returns, ...args: Items) {
   return z
     .function()
-    .args(
-      /** maybe this will workd */
-      makeCellAPISchema(valueSchema),
-      ...args,
-    )
+    .args(makeCellAPISchema(valueSchema), ...args)
     .returns(returns)
-    .describe('API of a cell')
 }
 
 export function makeFunctionWithAPIColumn<

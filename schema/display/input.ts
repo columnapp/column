@@ -17,7 +17,7 @@ export const FILTER_INPUT_TYPES = [
   createInputSchema('text', { minlength: z.number().optional(), maxlength: z.number().optional() }),
   createInputSchema('month', {}),
   createInputSchema('time', {}),
-  createInputSchema('number', {}),
+  createInputSchema('number', { step: z.string().optional() }),
   createInputSchema('date', {}),
   createInputSchema('select', {
     multiple: z.boolean().default(false).optional(),

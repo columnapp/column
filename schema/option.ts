@@ -14,10 +14,10 @@ export const ValueSchemaMapping = {
   'boolean[]': [z.literal('boolean[]'), z.array(z.boolean())],
 } as const
 
-function makeConfigItemColumnSchema<V extends ZodType, L extends ZodType, B extends ZodType, F extends ZodType>(
-  cellValueSchema: V,
-  configType: L,
-  configValue: B,
+function makeConfigItemColumnSchema<Value extends ZodType, ConfigType extends ZodType, ConfigValue extends ZodType>(
+  cellValueSchema: Value,
+  configType: ConfigType,
+  configValue: ConfigValue,
 ) {
   return z.object({
     /** type of value of the config, ex: string, string[], number, etc */
@@ -48,7 +48,6 @@ export function makeFilterSchema<V extends ZodType>(cellValueSchema: V) {
     ])
     .and(
       z.object({
-        label: z.string(),
         info: z.string().optional(),
         form,
       }),

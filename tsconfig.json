@@ -1,16 +1,26 @@
 {
-  "extends": "tsconfig/base.json",
+  "$schema": "https://json.schemastore.org/tsconfig",
   "exclude": ["node_modules", "dist"],
-  "prepublish": "tsc",
-
+  "display": "Default",
   "compilerOptions": {
     "baseUrl": "./",
+    "composite": false,
+    "stripInternal": true,
+    "lib": ["es2020"],
     "disableSizeLimit": true,
     "incremental": true,
     "outDir": "dist",
-    "stripInternal": true,
-    "strict": true,
+    "declaration": true,
+    "declarationMap": true,
     "esModuleInterop": true,
-    "lib": ["es2020"]
+    "forceConsistentCasingInFileNames": true,
+    "inlineSources": false,
+    "isolatedModules": true,
+    "moduleResolution": "node",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "preserveWatchOutput": true,
+    "skipLibCheck": true,
+    "strict": true
   }
 }

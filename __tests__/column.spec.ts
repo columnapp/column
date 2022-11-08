@@ -21,6 +21,7 @@ describe('Column Schema Checker', () => {
   it('checks valid schemas', () => {
     expect(() =>
       ColumnSchemaCheck({
+        name: 'test column',
         info: 'this column just renders message',
         version: 'string.0.0.1',
         display: {

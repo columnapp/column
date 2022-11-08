@@ -8,6 +8,8 @@ import { z, ZodError, ZodIssue, ZodType } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: V, versionSchema: T) {
   return z.object({
+    /** name of the column */
+    name: z.string(),
     /** what version of the column, dictates what value this column will hold, ex: date.0.0.1 or date[].0.0.1 */
     version: z.literal(versionSchema),
     /** information of the column, describe what this column does. Supports markdown. */

@@ -4,6 +4,7 @@ describe('Column Schema Checker', () => {
   it('check most barebone schema', () => {
     expect(() =>
       ColumnSchemaCheck({
+        name: 'barebones',
         version: 'string.0.0.1',
         info: 'just the default string',
       }),

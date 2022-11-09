@@ -1,6 +1,7 @@
 {
   "name": "@columnapp/schema",
   "version": "0.0.1-alpha2",
+  "repository": "https://github.com/columnapp/schema",
   "author": {
     "email": "hello@column.app",
     "name": "Column App",

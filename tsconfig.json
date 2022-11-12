@@ -4,6 +4,11 @@
   "display": "Default",
   "compilerOptions": {
     "baseUrl": "./",
+    "pretty": true,
+    "rootDir": "./",
+    "paths": {
+      "schema/*": ["./schema/*"]
+    },
     "composite": false,
     "stripInternal": true,
     "lib": ["es2020"],

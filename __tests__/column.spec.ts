@@ -41,7 +41,7 @@ describe('Column Schema Checker', () => {
         },
         parse: {
           info: 'regular string parse',
-          logic: (api, raw) => String(raw),
+          logic: (_api, raw: any) => String(raw),
         },
         filters: {
           '=': {
@@ -49,7 +49,7 @@ describe('Column Schema Checker', () => {
             info: 'just straight equal',
             label: 'Equals',
             type: 'number',
-            logic(api) {
+            logic() {
               return true
             },
           },

@@ -1,4 +1,5 @@
-import { CellAPISchemaAny } from 'schema/api'
+export type { CellAPISchemaAny, ColumnAPISchemaAny } from 'schema/api'
+export type { DisplaySchema } from 'schema/display'
 import { DisplaySchema } from 'schema/display'
 import { DisplayInputSchema } from 'schema/display/input'
 import { makeEventsSchema } from 'schema/events'
@@ -71,6 +72,7 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
       .optional(),
   })
 }
+
 // list all native column types, include it in column type in column/index.ts
 const ColumnSchemaNumber0_0_1 = makeColumnV0_0_1(z.number(), 'number.0.0.1')
 export type ColumnSchemaNumber = z.infer<typeof ColumnSchemaNumber0_0_1>
@@ -95,7 +97,7 @@ export type ColumnSchemaDates = z.infer<typeof ColumnSchemaDates0_0_1>
 const ColumnSchemaBooleans0_0_1 = makeColumnV0_0_1(z.array(z.boolean()), 'boolean[].0.0.1')
 export type ColumnSchemaBooleans = z.infer<typeof ColumnSchemaBooleans0_0_1>
 
-type ColumnSchema =
+export type ColumnSchema =
   | ColumnSchemaNumber
   | ColumnSchemaString
   | ColumnSchemaDate

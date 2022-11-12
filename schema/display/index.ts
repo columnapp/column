@@ -25,6 +25,7 @@ export const DisplaySchema = z
       value: z.any(),
     }),
   )
+export type DisplaySchema = z.infer<typeof DisplaySchema>
 
 export function makeFormSchemaCell<V extends ZodType>(cellValueSchema: V) {
   return z.union([makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema), DisplayInputSchema])

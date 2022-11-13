@@ -30,8 +30,8 @@ export function makeCellAPISchema<V extends ZodType>(valueSchema: V) {
       z.object({
         /** value of the cell */
         value: z.any(),
-        /** column id  */
-        id: z.string(),
+        cellId: z.string(),
+        columnId: z.string(),
       }),
     ),
   })

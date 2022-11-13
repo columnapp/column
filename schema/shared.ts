@@ -1,5 +1,5 @@
 import { makeCellAPISchema, makeColumnAPISchema } from 'schema/api'
-import { z, ZodTuple, ZodType } from 'zod'
+import { z, ZodRawShape, ZodTuple, ZodType } from 'zod'
 
 export function makeFunctionWithAPICell<
   Value extends ZodType,
@@ -28,7 +28,7 @@ export function makeFunctionWithAPIColumn<
  * @param obj
  * @returns
  */
-export function makeExtensibleSchema() {
+export function makeExtensibleSchema<T extends ZodRawShape>(shape: T) {
   return z.object({
     /** describe what it does, supports markdown. */
     info: z.string(),
@@ -46,5 +46,6 @@ export function makeExtensibleSchema() {
      * after defining the config properties to access, then api.config.lengthText is available
      * */
     config: z.record(z.any()).optional(),
+    ...shape,
   })
 }

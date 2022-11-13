@@ -26,7 +26,7 @@ export function makeCellAPISchema<V extends ZodType>(valueSchema: V) {
      * config: {otherColumn: {form: {type: 'column'}}}
      * and then it can be accessed: api.column[api.config.otherColumn].value
      */
-    column: z.record(
+    columns: z.record(
       z.object({
         /** value of the cell */
         value: z.any(),
@@ -37,7 +37,7 @@ export function makeCellAPISchema<V extends ZodType>(valueSchema: V) {
   })
 }
 export function makeColumnAPISchema<V extends ZodType>(valueSchema: V) {
-  return makeCellAPISchema(valueSchema).omit({ value: true })
+  return makeCellAPISchema(valueSchema).omit({ value: true, values: true })
 }
 export type CellAPISchemaAny = z.infer<ReturnType<typeof makeCellAPISchema>>
 export type ColumnAPISchemaAny = z.infer<ReturnType<typeof makeColumnAPISchema>>

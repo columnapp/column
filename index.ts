@@ -16,32 +16,25 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
     /** information of the column, describe what this column does. Supports markdown. */
     info: z.string(),
     /** dictates how the column displays the data in cells */
-    display: z
-      .object({
-        /** the logic on how the cell renders data */
-        render: makeFunctionWithAPICell(cellValueSchema, DisplaySchema).or(DisplaySchema),
-      })
-      .and(makeExtensibleSchema())
-      .optional(),
+    display: makeExtensibleSchema({
+      /** the logic on how the cell renders data */
+      render: makeFunctionWithAPICell(cellValueSchema, DisplaySchema).or(DisplaySchema),
+    }).optional(),
     /**
      * parse will be called prior to commiting the value, for ex: after user inputs from the cell or
      * during import, the raw value will be passed to parse and the resulting value will be the result
      */
-    parse: makeExtensibleSchema()
-      .and(
-        z.object({
-          /**
-           * logic to parse, the first parameter is the api and the second is the raw value to be parsed
-           */
-          logic: makeFunctionWithAPICell(cellValueSchema, cellValueSchema.optional().nullable(), z.unknown()),
-        }),
-      )
-      .optional(),
+    parse: makeExtensibleSchema({
+      /**
+       * logic to parse, the first parameter is the api and the second is the raw value to be parsed
+       */
+      logic: makeFunctionWithAPICell(cellValueSchema, cellValueSchema.optional().nullable(), z.unknown()),
+    }).optional(),
     /**
      * filtering capability of the column, the property of this object will be used as filter autocomplete token.
      * For example, { "=": {logic: (api, cellvalue) => api.value === cellvalue }}
      */
-    filters: z.record(makeExtensibleSchema().and(makeFilterSchema(cellValueSchema))).optional(),
+    filters: z.record(makeExtensibleSchema({}).and(makeFilterSchema(cellValueSchema))).optional(),
     /** callback for various events */
     events: makeEventsSchema(cellValueSchema).optional(),
     /**
@@ -68,7 +61,7 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
           headers: z.record(z.string()).optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
         }),
       ])
-      .and(makeExtensibleSchema())
+      .and(makeExtensibleSchema({}))
       .optional(),
   })
 }
@@ -76,6 +69,7 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
 // list all native column types, include it in column type in column/index.ts
 const ColumnSchemaNumber0_0_1 = makeColumnV0_0_1(z.number(), 'number.0.0.1')
 export type ColumnSchemaNumber = z.infer<typeof ColumnSchemaNumber0_0_1>
+
 const ColumnSchemaString0_0_1 = makeColumnV0_0_1(z.string(), 'string.0.0.1')
 export type ColumnSchemaString = z.infer<typeof ColumnSchemaString0_0_1>
 

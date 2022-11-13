@@ -1,5 +1,7 @@
 export type { CellAPISchemaAny, ColumnAPISchemaAny } from 'schema/api'
 export type { DisplaySchema } from 'schema/display'
+export { DisplayInputSchema, DisplayCellSchema } from 'schema/display/input'
+export { DisplayStaticSchema } from 'schema/display/static'
 import { DisplaySchema } from 'schema/display'
 import { DisplayInputSchema } from 'schema/display/input'
 import { makeEventsSchema } from 'schema/events'

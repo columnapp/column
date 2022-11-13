@@ -22,6 +22,7 @@ export const DisplaySchema = z
   ])
   .and(
     z.object({
+      height: z.number().optional(),
       value: z.any(),
     }),
   )

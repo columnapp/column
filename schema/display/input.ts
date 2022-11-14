@@ -28,7 +28,7 @@ export const FILTER_INPUT_TYPES = [
 ] as const
 // text, month, number, date, checkbox, select
 
-export const CELL_INPUT_TYPES = [
+export const CONFIG_INPUT_TYPES = [
   //standard ---------------------------------------------:
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-list
 
@@ -61,8 +61,8 @@ export const CELL_INPUT_TYPES = [
 ] as const
 export const DisplayFilterSchema = z.discriminatedUnion('type', [...FILTER_INPUT_TYPES])
 export type DisplayFilterSchema = z.infer<typeof DisplayFilterSchema>
-export const DisplayCellSchema = z.discriminatedUnion('type', [...CELL_INPUT_TYPES])
-export type DisplayCellSchema = z.infer<typeof DisplayCellSchema>
+export const DisplayConfigSchema = z.discriminatedUnion('type', [...CONFIG_INPUT_TYPES])
+export type DisplayConfigSchema = z.infer<typeof DisplayConfigSchema>
 
-export const DisplayInputSchema = z.union([DisplayFilterSchema, DisplayCellSchema])
+export const DisplayInputSchema = z.union([DisplayFilterSchema, DisplayConfigSchema])
 export type DisplayInputSchema = z.infer<typeof DisplayInputSchema>

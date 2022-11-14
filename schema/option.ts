@@ -8,6 +8,7 @@ export const ValueSchemaMapping = {
   date: [z.literal('date'), z.date()],
   number: [z.literal('number'), z.number()],
   boolean: [z.literal('boolean'), z.boolean()],
+  column: [z.literal('column'), z.string()],
   'string[]': [z.literal('string[]'), z.array(z.string())],
   'date[]': [z.literal('date[]'), z.array(z.date())],
   'number[]': [z.literal('number[]'), z.array(z.number())],
@@ -41,6 +42,7 @@ export function makeFilterSchema<V extends ZodType>(cellValueSchema: V) {
       makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['string']),
       makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['date']),
       makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['number']),
+      makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['column']),
       makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['string[]']),
       makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['number[]']),
       makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['boolean[]']),
@@ -72,6 +74,9 @@ export function makeConfigSchema<V extends ZodType>(valueSchema: V) {
         logic: true,
       }),
       makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['number']).omit({
+        logic: true,
+      }),
+      makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['column']).omit({
         logic: true,
       }),
       makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['string[]']).omit({

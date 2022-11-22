@@ -24,7 +24,7 @@ describe('Column Schema Checker', () => {
       ColumnSchemaCheck({
         name: 'test column',
         info: 'this column just renders message',
-        version: 'string.0.0.1',
+        type: 'string.0.0.1',
         display: {
           info: 'shows image',
           config: {},

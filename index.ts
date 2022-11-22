@@ -14,7 +14,7 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
     /** name of the column */
     name: z.string(),
     /** what version of the column, dictates what value this column will hold, ex: date.0.0.1 or date[].0.0.1 */
-    version: z.literal(versionSchema),
+    type: z.literal(versionSchema),
     /** information of the column, describe what this column does. Supports markdown. */
     info: z.string(),
     /** dictates how the column displays the data in cells */
@@ -104,7 +104,7 @@ export type ColumnSchema =
   | ColumnSchemaBooleans
 
 const ColumnSchema: z.ZodType<ColumnSchema> = z.lazy(() =>
-  z.discriminatedUnion('version', [
+  z.discriminatedUnion('type', [
     ColumnSchemaBoolean0_0_1,
     ColumnSchemaBooleans0_0_1,
     ColumnSchemaDate0_0_1,
@@ -122,7 +122,7 @@ export class ColumnSchemaError extends Error {
   }
 }
 
-export function ColumnSchemaCheck(obj: unknown) {
+export function CheckColumnSchema(obj: unknown) {
   try {
     return ColumnSchema.parse(obj)
   } catch (err: any) {

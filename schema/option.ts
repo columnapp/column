@@ -8,7 +8,7 @@ export const ValueSchemaMapping = {
   date: [z.literal('date'), z.date()],
   number: [z.literal('number'), z.number()],
   boolean: [z.literal('boolean'), z.boolean()],
-  column: [z.literal('column'), z.string()],
+  column: [z.literal('column'), z.string()], // will be verified differently, must exist in table
   'string[]': [z.literal('string[]'), z.array(z.string())],
   'date[]': [z.literal('date[]'), z.array(z.date())],
   'number[]': [z.literal('number[]'), z.array(z.number())],

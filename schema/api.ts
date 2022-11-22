@@ -31,7 +31,7 @@ export function makeCellAPISchema<V extends ZodType>(valueSchema: V) {
         /** value of the cell */
         value: z.any(),
         cellId: z.string(),
-        columnId: z.string(),
+        columnId: z.number(),
       }),
     ),
   })

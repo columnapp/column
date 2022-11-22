@@ -122,7 +122,7 @@ export class ColumnSchemaError extends Error {
   }
 }
 
-export function CheckColumnSchema(obj: unknown) {
+export function ColumnSchemaCheck(obj: unknown) {
   try {
     return ColumnSchema.parse(obj)
   } catch (err: any) {

@@ -5,7 +5,7 @@ describe('Column Schema Checker', () => {
     expect(() =>
       ColumnSchemaCheck({
         name: 'barebones',
-        version: 'string.0.0.1',
+        type: 'string.0.0.1',
         info: 'just the default string',
       }),
     ).not.toThrow()
@@ -13,10 +13,10 @@ describe('Column Schema Checker', () => {
   it('check obviously invalid schema', () => {
     expect(() => ColumnSchemaCheck(null)).toThrowError()
     expect(() => ColumnSchemaCheck({})).toThrowError()
-    expect(() => ColumnSchemaCheck({ version: '' })).toThrowError()
-    expect(() => ColumnSchemaCheck({ version: 'string.0.0.1' })).toThrowError()
+    expect(() => ColumnSchemaCheck({ type: '' })).toThrowError()
+    expect(() => ColumnSchemaCheck({ type: 'string.0.0.1' })).toThrowError()
     expect(() =>
-      ColumnSchemaCheck({ version: 'string.0.0.1', info: 'wawa', display: { type: 'textblabla' } }),
+      ColumnSchemaCheck({ type: 'string.0.0.1', info: 'wawa', display: { type: 'textblabla' } }),
     ).toThrowError()
   })
   it('checks valid schemas', () => {

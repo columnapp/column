@@ -104,7 +104,7 @@ export type ColumnSchema =
   | ColumnSchemaDates
   | ColumnSchemaBooleans
 
-const ColumnSchema: z.ZodType<ColumnSchema> = z.lazy(() =>
+export const ColumnSchema: z.ZodType<ColumnSchema> = z.lazy(() =>
   z.discriminatedUnion('type', [
     ColumnSchemaBoolean0_0_1,
     ColumnSchemaBooleans0_0_1,

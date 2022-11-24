@@ -5,7 +5,7 @@ describe('Column Schema Checker', () => {
     expect(() =>
       ColumnSchemaCheck({
         name: 'barebones',
-        type: 'string.0.0.1',
+        type: 'string',
         info: 'just the default string',
       }),
     ).not.toThrow()
@@ -14,7 +14,7 @@ describe('Column Schema Checker', () => {
     expect(() => ColumnSchemaCheck(null)).toThrowError()
     expect(() => ColumnSchemaCheck({})).toThrowError()
     expect(() => ColumnSchemaCheck({ type: '' })).toThrowError()
-    expect(() => ColumnSchemaCheck({ type: 'string.0.0.1' })).toThrowError()
+    expect(() => ColumnSchemaCheck({ type: 'string' })).toThrowError()
     expect(() =>
       ColumnSchemaCheck({ type: 'string.0.0.1', info: 'wawa', display: { type: 'textblabla' } }),
     ).toThrowError()
@@ -24,7 +24,7 @@ describe('Column Schema Checker', () => {
       ColumnSchemaCheck({
         name: 'test column',
         info: 'this column just renders message',
-        type: 'string.0.0.1',
+        type: 'string',
         display: {
           info: 'shows image',
           config: {},

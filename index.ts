@@ -9,12 +9,13 @@ import { makeConfigSchema, makeFilterSchema } from 'schema/option'
 import { makeFunctionWithAPICell, makeExtensibleSchema } from 'schema/shared'
 import { z, ZodError, ZodIssue, ZodType } from 'zod'
 import { fromZodError } from 'zod-validation-error'
-function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: V, versionSchema: T) {
+
+function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: V, typeSchema: T) {
   return z.object({
     /** name of the column */
     name: z.string(),
-    /** what version of the column, dictates what value this column will hold, ex: date.0.0.1 or date[].0.0.1 */
-    type: z.literal(versionSchema),
+    /** dictates what value this column will hold, ex: date or date[] */
+    type: z.literal(typeSchema),
     /** information of the column, describe what this column does. Supports markdown. */
     info: z.string(),
     /** dictates how the column displays the data in cells */
@@ -57,7 +58,7 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
           form: z.union([makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema), DisplayInputSchema]).optional(),
         }),
         z.object({
-          type: z.literal('url'),
+          type: z.literal('request'),
           method: z.union([z.literal('post'), z.literal('get')]),
           params: z.record(z.string()).optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
           headers: z.record(z.string()).optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
@@ -69,29 +70,29 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
 }
 
 // list all native column types, include it in column type in column/index.ts
-const ColumnSchemaNumber0_0_1 = makeColumnV0_0_1(z.number(), 'number.0.0.1')
-export type ColumnSchemaNumber = z.infer<typeof ColumnSchemaNumber0_0_1>
+const ColumnSchemaNumber0_0_1 = makeColumnV0_0_1(z.number(), 'number')
+export interface ColumnSchemaNumber extends z.infer<typeof ColumnSchemaNumber0_0_1> {}
 
-const ColumnSchemaString0_0_1 = makeColumnV0_0_1(z.string(), 'string.0.0.1')
-export type ColumnSchemaString = z.infer<typeof ColumnSchemaString0_0_1>
+const ColumnSchemaString0_0_1 = makeColumnV0_0_1(z.string(), 'string')
+export interface ColumnSchemaString extends z.infer<typeof ColumnSchemaString0_0_1> {}
 
-const ColumnSchemaDate0_0_1 = makeColumnV0_0_1(z.date(), 'date.0.0.1')
-export type ColumnSchemaDate = z.infer<typeof ColumnSchemaDate0_0_1>
+const ColumnSchemaDate0_0_1 = makeColumnV0_0_1(z.date(), 'date')
+export interface ColumnSchemaDate extends z.infer<typeof ColumnSchemaDate0_0_1> {}
 
-const ColumnSchemaBoolean0_0_1 = makeColumnV0_0_1(z.boolean(), 'boolean.0.0.1')
-export type ColumnSchemaBoolean = z.infer<typeof ColumnSchemaBoolean0_0_1>
+const ColumnSchemaBoolean0_0_1 = makeColumnV0_0_1(z.boolean(), 'boolean')
+export interface ColumnSchemaBoolean extends z.infer<typeof ColumnSchemaBoolean0_0_1> {}
 
-const ColumnSchemaNumbers0_0_1 = makeColumnV0_0_1(z.array(z.number()), 'number[].0.0.1')
-export type ColumnSchemaNumbers = z.infer<typeof ColumnSchemaNumbers0_0_1>
+const ColumnSchemaNumbers0_0_1 = makeColumnV0_0_1(z.array(z.number()), 'number[]')
+export interface ColumnSchemaNumbers extends z.infer<typeof ColumnSchemaNumbers0_0_1> {}
 
-const ColumnSchemaStrings0_0_1 = makeColumnV0_0_1(z.array(z.string()), 'string[].0.0.1')
-export type ColumnSchemaStrings = z.infer<typeof ColumnSchemaStrings0_0_1>
+const ColumnSchemaStrings0_0_1 = makeColumnV0_0_1(z.array(z.string()), 'string[]')
+export interface ColumnSchemaStrings extends z.infer<typeof ColumnSchemaStrings0_0_1> {}
 
-const ColumnSchemaDates0_0_1 = makeColumnV0_0_1(z.array(z.date()), 'date[].0.0.1')
-export type ColumnSchemaDates = z.infer<typeof ColumnSchemaDates0_0_1>
+const ColumnSchemaDates0_0_1 = makeColumnV0_0_1(z.array(z.date()), 'date[]')
+export interface ColumnSchemaDates extends z.infer<typeof ColumnSchemaDates0_0_1> {}
 
-const ColumnSchemaBooleans0_0_1 = makeColumnV0_0_1(z.array(z.boolean()), 'boolean[].0.0.1')
-export type ColumnSchemaBooleans = z.infer<typeof ColumnSchemaBooleans0_0_1>
+const ColumnSchemaBooleans0_0_1 = makeColumnV0_0_1(z.array(z.boolean()), 'boolean[]')
+export interface ColumnSchemaBooleans extends z.infer<typeof ColumnSchemaBooleans0_0_1> {}
 
 export type ColumnSchema =
   | ColumnSchemaNumber

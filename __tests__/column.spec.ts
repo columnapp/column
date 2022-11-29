@@ -41,7 +41,7 @@ describe('Column Schema Checker', () => {
         },
         parse: {
           info: 'regular string parse',
-          logic: (_api, raw: any) => String(raw),
+          logic: (api, raw: any) => String((api.cell?.value ?? '') + raw),
         },
         filters: {
           '=': {

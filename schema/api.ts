@@ -1,11 +1,17 @@
 import { z, ZodType } from 'zod'
-
+function makeCellValueAPI<V extends ZodType>(valueSchema: V) {
+  return z.object({
+    value: z.any(),
+    created: z.number(),
+    updated: z.number(),
+  })
+}
 export function makeCellAPISchema<V extends ZodType>(valueSchema: V) {
   return z.object({
     /** the value of the cell */
-    value: valueSchema.nullable(),
+    cell: makeCellValueAPI(valueSchema).nullable(),
     /** the values of the column, keyed by cell id, includes self */
-    values: z.record(valueSchema.nullable()),
+    cells: z.record(makeCellValueAPI(valueSchema).nullable()),
     /** config values, only config defined by the config object will be accessible here */
     config: z.record(z.any()),
     /**

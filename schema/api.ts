@@ -9,7 +9,7 @@ function makeCellValueAPI<V extends ZodType>(valueSchema: V) {
 export function makeCellAPISchema<V extends ZodType>(valueSchema: V) {
   return z.object({
     /** the value of the cell */
-    cell: makeCellValueAPI(valueSchema).nullable(),
+    cell: makeCellValueAPI(valueSchema),
     /** the values of the column, keyed by cell id, includes self */
     cells: z.record(makeCellValueAPI(valueSchema).nullable()),
     /** config values, only config defined by the config object will be accessible here */

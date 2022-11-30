@@ -1,7 +1,7 @@
 import { z, ZodType } from 'zod'
 function makeCellValueAPI<V extends ZodType>(valueSchema: V) {
   return z.object({
-    value: z.any(),
+    value: valueSchema,
     created: z.number(),
     updated: z.number(),
   })

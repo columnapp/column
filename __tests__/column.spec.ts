@@ -1,4 +1,4 @@
-import { ColumnSchemaCheck, ColumnSchemaString } from 'index'
+import { ColumnSchemaBoolean, ColumnSchemaCheck, ColumnSchemaString } from 'index'
 
 describe('Column Schema Checker', () => {
   it('check most barebone schema', () => {
@@ -65,6 +65,39 @@ describe('Column Schema Checker', () => {
           },
         },
       } as ColumnSchemaString),
+    ).not.toThrow()
+  })
+  it('checks valid schemas', () => {
+    expect(() =>
+      ColumnSchemaCheck({
+        name: 'test column',
+        info: 'this column just renders message',
+        type: 'boolean',
+        display: {
+          info: 'shows image',
+          config: {},
+          render: {
+            type: 'img',
+          },
+        },
+        config: {
+          height: {
+            label: 'Height',
+            form: { type: 'number' },
+            type: 'number',
+          },
+        },
+
+        value: {
+          type: 'request',
+          info: 'input is something funky',
+          method: 'get',
+          url: 'http://bla',
+          config: {},
+          headers: {},
+          params: {},
+        },
+      } as ColumnSchemaBoolean),
     ).not.toThrow()
   })
 })

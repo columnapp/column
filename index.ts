@@ -52,16 +52,21 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
     config: z.record(makeConfigSchema(cellValueSchema)).optional(),
     /** defines the source of the value, such as cell (user manually enter through the table) and more */
     value: z
-      .union([
+      .discriminatedUnion('type', [
         z.object({
           type: z.literal('cell'), // takes value from cell
           form: z.union([makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema), DisplayInputSchema]).optional(),
         }),
         z.object({
           type: z.literal('request'),
-          method: z.union([z.literal('post'), z.literal('get')]),
-          params: z.record(z.string()).optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-          headers: z.record(z.string()).optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+          url: z.union([makeFunctionWithAPICell(cellValueSchema, z.string()), z.string()]),
+          method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
+          params: z
+            .union([makeFunctionWithAPICell(cellValueSchema, z.record(z.string())), z.record(z.string())])
+            .optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+          headers: z
+            .union([makeFunctionWithAPICell(cellValueSchema, z.record(z.string())), z.record(z.string())])
+            .optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
         }),
       ])
       .and(makeExtensibleSchema({}))

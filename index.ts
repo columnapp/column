@@ -4,6 +4,7 @@ export { DisplayInputSchema, DisplayConfigSchema as DisplayCellSchema } from 'sc
 export { DisplayStaticSchema } from 'schema/display/static'
 import { DisplaySchema } from 'schema/display'
 import { DisplayInputSchema } from 'schema/display/input'
+import { DisplayStaticSchema } from 'schema/display/static'
 import { makeEventsSchema } from 'schema/events'
 import { makeConfigSchema, makeFilterSchema } from 'schema/option'
 import { makeFunctionWithAPICell, makeExtensibleSchema } from 'schema/shared'
@@ -53,10 +54,17 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
     /** defines the source of the value, such as cell (user manually enter through the table) and more */
     value: z
       .discriminatedUnion('type', [
+        /** takes value from the user then pass the result parse() */
         z.object({
-          type: z.literal('cell'), // takes value from cell
-          form: z.union([makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema), DisplayInputSchema]).optional(),
+          type: z.literal('cell'),
+          form: z
+            .union([
+              makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema.or(DisplayStaticSchema)),
+              DisplayInputSchema.or(DisplayStaticSchema),
+            ])
+            .optional(),
         }),
+        /** request url then pass the result to parse() */
         z.object({
           type: z.literal('request'),
           url: z.union([makeFunctionWithAPICell(cellValueSchema, z.string()), z.string()]),

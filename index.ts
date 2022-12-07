@@ -18,6 +18,8 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
   const CellRequestObject = z.object({
     // TODO: poll is not implemented yet
     url: z.union([makeFunctionWithAPICell(cellValueSchema, z.string()), z.string()]),
+    /** request will only fire if validate() returns true */
+    validate: makeFunctionWithAPICell(cellValueSchema, z.boolean()),
     method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
     params: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU

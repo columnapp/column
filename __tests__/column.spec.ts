@@ -93,6 +93,7 @@ describe('Column Schema Checker', () => {
           type: 'request',
           info: 'input is something funky',
           read: {
+            validate: () => true,
             method: 'get',
             url: 'http://bla',
             config: {},

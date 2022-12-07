@@ -1,4 +1,4 @@
-import { ColumnSchemaBoolean, ColumnSchemaCheck, ColumnSchemaString } from 'index'
+import { ColumnSchema, ColumnSchemaCheck } from 'index'
 
 describe('Column Schema Checker', () => {
   it('check most barebone schema', () => {
@@ -24,13 +24,13 @@ describe('Column Schema Checker', () => {
       ColumnSchemaCheck({
         name: 'test column',
         info: 'this column just renders message',
-        type: 'string',
         display: {
           info: 'shows image',
           config: {},
-          render: {
+          render: (api) => ({
             type: 'img',
-          },
+            value: api.cell.value,
+          }),
         },
         config: {
           height: {
@@ -60,11 +60,12 @@ describe('Column Schema Checker', () => {
         value: {
           type: 'cell',
           info: 'input is something funky',
-          form: {
+          form: (api) => ({
             type: 'date',
-          },
+            value: api.cell.value.toString(),
+          }),
         },
-      } as ColumnSchemaString),
+      } as ColumnSchema),
     ).not.toThrow()
   })
   it('checks valid schemas', () => {
@@ -76,9 +77,9 @@ describe('Column Schema Checker', () => {
         display: {
           info: 'shows image',
           config: {},
-          render: {
+          render: () => ({
             type: 'img',
-          },
+          }),
         },
         config: {
           height: {
@@ -91,13 +92,15 @@ describe('Column Schema Checker', () => {
         value: {
           type: 'request',
           info: 'input is something funky',
-          method: 'get',
-          url: 'http://bla',
-          config: {},
-          headers: {},
-          params: {},
+          read: {
+            method: 'get',
+            url: 'http://bla',
+            config: {},
+            headers: {},
+            params: {},
+          },
         },
-      } as ColumnSchemaBoolean),
+      } as ColumnSchema),
     ).not.toThrow()
   })
 })

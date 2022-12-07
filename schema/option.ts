@@ -35,7 +35,7 @@ function makeConfigItemColumnSchema<Value extends ZodType, ConfigType extends Zo
 }
 export function makeFilterSchema<V extends ZodType>(cellValueSchema: V) {
   // filter input has specific behavior so we need to separate them from say input rendered in cells
-  const form = z.union([makeFunctionWithAPIColumn(cellValueSchema, DisplayFilterSchema), DisplayFilterSchema])
+  const form = makeFunctionWithAPIColumn(cellValueSchema, DisplayFilterSchema)
   return z
     .discriminatedUnion('type', [
       makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['boolean']),
@@ -60,7 +60,7 @@ export function makeFilterSchema<V extends ZodType>(cellValueSchema: V) {
  * config is defined at the column level, then distributed using config
  */
 export function makeConfigSchema<V extends ZodType>(valueSchema: V) {
-  const form = z.union([makeFunctionWithAPIColumn(valueSchema, DisplayInputSchema), DisplayInputSchema])
+  const form = makeFunctionWithAPIColumn(valueSchema, DisplayInputSchema)
 
   return z
     .discriminatedUnion('type', [

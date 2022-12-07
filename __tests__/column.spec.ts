@@ -35,7 +35,7 @@ describe('Column Schema Checker', () => {
         config: {
           height: {
             label: 'Height',
-            form: { type: 'number' },
+            form: (api) => ({ type: 'number', value: api.cell.value }),
             type: 'number',
           },
         },
@@ -45,7 +45,7 @@ describe('Column Schema Checker', () => {
         },
         filters: {
           '=': {
-            form: { type: 'number' },
+            form: () => ({ type: 'number' }),
             info: 'just straight equal',
             label: 'Equals',
             type: 'number',
@@ -62,7 +62,7 @@ describe('Column Schema Checker', () => {
           info: 'input is something funky',
           form: (api) => ({
             type: 'date',
-            value: api.cell.value.toString(),
+            value: api.cell.value,
           }),
         },
       } as ColumnSchema),
@@ -84,7 +84,7 @@ describe('Column Schema Checker', () => {
         config: {
           height: {
             label: 'Height',
-            form: { type: 'number' },
+            form: (api) => ({ type: 'number', value: api.cell.value }),
             type: 'number',
           },
         },

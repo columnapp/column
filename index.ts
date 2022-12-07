@@ -14,12 +14,13 @@ import { fromZodError } from 'zod-validation-error'
 function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: V) {
   const extensibleSchema = makeExtensibleSchema({})
   const form = makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema.or(DisplayStaticSchema)).optional()
+  const recordCreator = makeFunctionWithAPICell(cellValueSchema, z.record(z.any()))
   const CellRequestObject = z.object({
     // TODO: poll is not implemented yet
     url: z.union([makeFunctionWithAPICell(cellValueSchema, z.string()), z.string()]),
     method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
-    params: z.union([makeFunctionWithAPICell(cellValueSchema, z.record(z.string())), z.record(z.string())]).optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-    headers: z.union([makeFunctionWithAPICell(cellValueSchema, z.record(z.string())), z.record(z.string())]).optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    params: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
   })
   return z.object({
     /** name of the column */

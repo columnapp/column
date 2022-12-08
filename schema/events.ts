@@ -2,7 +2,7 @@ import { makeFunctionWithAPICell } from 'schema/shared'
 import { z, ZodType } from 'zod'
 
 function makeEventCallback<V extends ZodType>(valueSchema: V, extra = z.void()) {
-  return makeFunctionWithAPICell(valueSchema, extra).optional()
+  return makeFunctionWithAPICell(valueSchema, extra, z.any()).optional()
 }
 export function makeEventsSchema<V extends ZodType>(valueSchema: V) {
   return z.object({

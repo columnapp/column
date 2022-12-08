@@ -60,7 +60,7 @@ export function makeFilterSchema<V extends ZodType>(cellValueSchema: V) {
  * config is defined at the column level, then distributed using config
  */
 export function makeConfigSchema<V extends ZodType>(valueSchema: V) {
-  const form = makeFunctionWithAPIColumn(valueSchema, DisplayInputSchema)
+  const form = makeFunctionWithAPIColumn(valueSchema, DisplayInputSchema, z.any())
 
   return z
     .discriminatedUnion('type', [

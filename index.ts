@@ -13,13 +13,13 @@ import { fromZodError } from 'zod-validation-error'
 
 function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: V) {
   const extensibleSchema = makeExtensibleSchema({})
-  const form = makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema.or(DisplayStaticSchema)).optional()
-  const recordCreator = makeFunctionWithAPICell(cellValueSchema, z.record(z.any()))
+  const form = makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema.or(DisplayStaticSchema), z.any()).optional()
+  const recordCreator = makeFunctionWithAPICell(cellValueSchema, z.record(z.any()), z.any())
   const CellRequestObject = z.object({
     // TODO: poll is not implemented yet
     url: z.union([makeFunctionWithAPICell(cellValueSchema, z.string()), z.string()]),
     /** request will only fire if validate() returns true */
-    validate: makeFunctionWithAPICell(cellValueSchema, z.boolean()),
+    validate: makeFunctionWithAPICell(cellValueSchema, z.boolean(), z.any()),
     method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
     params: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
@@ -33,7 +33,7 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
     display: z
       .object({
         /** the logic on how the cell renders data */
-        render: makeFunctionWithAPICell(cellValueSchema, DisplaySchema),
+        render: makeFunctionWithAPICell(cellValueSchema, DisplaySchema, z.any()),
       })
       .and(extensibleSchema)
       .optional(),
@@ -64,7 +64,7 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
         z
           .object({
             /** returns the value */
-            returns: makeFunctionWithAPICell(cellValueSchema, z.any()),
+            returns: makeFunctionWithAPICell(cellValueSchema, z.any(), z.any()),
           })
           .and(extensibleSchema),
       )

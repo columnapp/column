@@ -35,7 +35,7 @@ describe('Column Schema Checker', () => {
         config: {
           height: {
             label: 'Height',
-            form: (api) => ({ type: 'number', value: api.cell.value }),
+            form: (api) => ({ type: 'number', value: api.config.height }),
             type: 'number',
           },
         },
@@ -84,7 +84,7 @@ describe('Column Schema Checker', () => {
         config: {
           height: {
             label: 'Height',
-            form: (api) => ({ type: 'number', value: api.cell.value }),
+            form: (api) => ({ type: 'number', value: api.config.height }),
             type: 'number',
           },
         },

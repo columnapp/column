@@ -37,7 +37,7 @@ export function makeCellAPISchema<V extends ZodType>(valueSchema: V) {
   })
 }
 export function makeColumnAPISchema<V extends ZodType>(valueSchema: V) {
-  return makeCellAPISchema(valueSchema).omit({ value: true, columns: true })
+  return makeCellAPISchema(valueSchema).omit({ cell: true, columns: true })
 }
 export type CellAPISchemaAny = z.infer<ReturnType<typeof makeCellAPISchema>>
 export type ColumnAPISchemaAny = z.infer<ReturnType<typeof makeColumnAPISchema>>

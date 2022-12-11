@@ -65,8 +65,9 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
       .record(
         z
           .object({
+            label: z.string().optional(),
             /** returns the value */
-            returns: makeFunctionWithAPICell(cellValueSchema, z.any(), z.any()),
+            returns: makeFunctionWithAPICell(cellValueSchema, z.any()),
           })
           .and(extensibleSchema),
       )

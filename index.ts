@@ -26,7 +26,9 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
   })
   return z.object({
     /** name of the column */
-    name: z.string(),
+    name: z.string({
+      description: 'name of the column',
+    }),
     /** information of the column, describe what this column does. Supports markdown. */
     info: z.string(),
     /** dictates how the column displays the data in cells */

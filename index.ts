@@ -11,9 +11,9 @@ import { makeFunctionWithAPICell, makeExtensibleSchema } from 'schema/shared'
 import { z, ZodError, ZodIssue, ZodType } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 
-function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: V) {
+function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
   const extensibleSchema = makeExtensibleSchema({})
-  const form = makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema.or(DisplayStaticSchema), z.any()).optional()
+  const form = makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema.or(DisplayStaticSchema)).optional()
   const recordCreator = makeFunctionWithAPICell(cellValueSchema, z.record(z.any()), z.any())
   const CellRequestObject = z.object({
     // TODO: poll is not implemented yet
@@ -35,7 +35,7 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
     display: z
       .object({
         /** the logic on how the cell renders data */
-        render: makeFunctionWithAPICell(cellValueSchema, DisplaySchema, z.any()),
+        render: makeFunctionWithAPICell(cellValueSchema, DisplaySchema),
       })
       .and(extensibleSchema)
       .optional(),
@@ -103,31 +103,6 @@ function makeColumnV0_0_1<V extends ZodType, T extends string>(cellValueSchema: 
       .optional(),
   })
 }
-
-// // list all native column types, include it in column type in column/index.ts
-// const ColumnSchemaNumber0_0_1 = makeColumnV0_0_1(z.number(), 'number')
-// export interface ColumnSchemaNumber extends z.infer<typeof ColumnSchemaNumber0_0_1> {}
-
-// const ColumnSchemaString0_0_1 = makeColumnV0_0_1(z.string(), 'string')
-// export interface ColumnSchemaString extends z.infer<typeof ColumnSchemaString0_0_1> {}
-
-// const ColumnSchemaDate0_0_1 = makeColumnV0_0_1(z.date(), 'date')
-// export interface ColumnSchemaDate extends z.infer<typeof ColumnSchemaDate0_0_1> {}
-
-// const ColumnSchemaBoolean0_0_1 = makeColumnV0_0_1(z.boolean(), 'boolean')
-// export interface ColumnSchemaBoolean extends z.infer<typeof ColumnSchemaBoolean0_0_1> {}
-
-// const ColumnSchemaNumbers0_0_1 = makeColumnV0_0_1(z.array(z.number()), 'number[]')
-// export interface ColumnSchemaNumbers extends z.infer<typeof ColumnSchemaNumbers0_0_1> {}
-
-// const ColumnSchemaStrings0_0_1 = makeColumnV0_0_1(z.array(z.string()), 'string[]')
-// export interface ColumnSchemaStrings extends z.infer<typeof ColumnSchemaStrings0_0_1> {}
-
-// const ColumnSchemaDates0_0_1 = makeColumnV0_0_1(z.array(z.date()), 'date[]')
-// export interface ColumnSchemaDates extends z.infer<typeof ColumnSchemaDates0_0_1> {}
-
-// const ColumnSchemaBooleans0_0_1 = makeColumnV0_0_1(z.array(z.boolean()), 'boolean[]')
-// export interface ColumnSchemaBooleans extends z.infer<typeof ColumnSchemaBooleans0_0_1> {}
 
 export const ColumnSchema = makeColumnV0_0_1(z.any())
 

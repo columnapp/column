@@ -7,13 +7,14 @@ import { DisplayInputSchema } from 'schema/display/input'
 import { DisplayStaticSchema } from 'schema/display/static'
 import { makeEventsSchema } from 'schema/events'
 import { makeConfigSchema, makeFilterSchema } from 'schema/option'
-import { makeFunctionWithAPICell, makeExtensibleSchema } from 'schema/shared'
+import { makeFunctionWithAPICell, makeExtensibleSchema, makeFunctionWithAPIColumn } from 'schema/shared'
 import { z, ZodError, ZodIssue, ZodType } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 
 function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
   const extensibleSchema = makeExtensibleSchema({})
-  const form = makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema.or(DisplayStaticSchema)).optional()
+  // add parameter to the function because, the underlying api.cell.value is not the same as form input
+  const form = makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema.or(DisplayStaticSchema), z.any())
   const recordCreator = makeFunctionWithAPICell(cellValueSchema, z.record(z.any()), z.any())
   const CellRequestObject = z.object({
     // TODO: poll is not implemented yet
@@ -48,7 +49,7 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
         /**
          * logic to parse, the first parameter is the api and the second is the raw value to be parsed
          */
-        logic: makeFunctionWithAPICell(cellValueSchema, cellValueSchema.optional().nullable(), z.unknown()),
+        logic: makeFunctionWithAPIColumn(cellValueSchema, cellValueSchema.optional().nullable(), z.unknown()),
       })
       .and(extensibleSchema)
       .optional(),

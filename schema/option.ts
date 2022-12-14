@@ -35,7 +35,7 @@ function makeConfigItemColumnSchema<Value extends ZodType, ConfigType extends Zo
 }
 export function makeFilterSchema<V extends ZodType>(cellValueSchema: V) {
   // filter input has specific behavior so we need to separate them from say input rendered in cells
-  const form = makeFunctionWithAPICell(
+  const form = makeFunctionWithAPIColumn(
     cellValueSchema,
     DisplayFilterSchema,
     z.any({

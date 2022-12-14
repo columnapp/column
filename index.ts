@@ -49,7 +49,7 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
         /**
          * logic to parse, the first parameter is the api and the second is the raw value to be parsed
          */
-        logic: makeFunctionWithAPIColumn(cellValueSchema, cellValueSchema.optional().nullable(), z.unknown()),
+        logic: makeFunctionWithAPICell(cellValueSchema, cellValueSchema.optional().nullable(), z.any()),
       })
       .and(extensibleSchema)
       .optional(),

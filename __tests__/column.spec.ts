@@ -7,6 +7,7 @@ describe('Column Schema Checker', () => {
         name: 'barebones',
         type: 'string',
         info: 'just the default string',
+        primitive: (api: any) => (api.cell.value == null ? '' : api.cell.value),
       }),
     ).not.toThrow()
   })
@@ -24,6 +25,7 @@ describe('Column Schema Checker', () => {
       ColumnSchemaCheck({
         name: 'test column',
         info: 'this column just renders message',
+        primitive: (api) => (api.cell.value == null ? '' : api.cell.value),
         display: {
           info: 'shows image',
           config: {},
@@ -72,6 +74,7 @@ describe('Column Schema Checker', () => {
     expect(() =>
       ColumnSchemaCheck({
         name: 'test column',
+        primitive: (api) => (api.cell.value == null ? '' : api.cell.value),
         info: 'this column just renders message',
         type: 'boolean',
         display: {

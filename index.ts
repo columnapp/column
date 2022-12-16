@@ -32,6 +32,11 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     }),
     /** information of the column, describe what this column does. Supports markdown. */
     info: z.string(),
+    /** primitive data type representation of the value, used for sorting, grouping, etc */
+    primitive: makeFunctionWithAPICell(
+      cellValueSchema,
+      z.union([z.number(), z.null(), z.string(), z.boolean(), z.undefined(), z.bigint()]),
+    ),
     /** dictates how the column displays the data in cells */
     display: z
       .object({
@@ -60,7 +65,7 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     filters: z.record(extensibleSchema.and(makeFilterSchema(cellValueSchema))).optional(),
     /**
      * exposes the underlying data to be read by other columns
-     * defaults, there will always be "api.cell.value" exposure as value
+     * by default, there will always be "Value" exposed, which returns valueOf
      */
     expose: z
       .record(

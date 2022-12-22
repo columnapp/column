@@ -26,12 +26,13 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
   const parse = makeFunctionWithAPICell(
     cellValueSchema,
     z.object({
-      value: z.any(),
+      // value key not defined write undefined or delete, to the cell
+      value: z.any().optional(),
       store: z.any().optional(),
       cache: z.any().optional(),
     }),
     z.any(),
-  ).optional()
+  )
 
   const CellRequestObject = {
     // TODO: poll is not implemented yet
@@ -116,9 +117,13 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
           .optional(), // shows form on edit
         // request.hash will be watched, changes will send a request
         // with the new parameters
-        read: z.object(CellRequestObject).optional(),
-        // after parse -> commit, will optionally send a POST to write
-        write: z.object(CellRequestObject).optional(), // shows form
+        request: z
+          .object({
+            read: z.object(CellRequestObject).optional(),
+            // after parse -> commit, will optionally send a POST to write
+            write: z.object(CellRequestObject).optional(), // shows form
+          })
+          .optional(),
       })
       .and(extensibleSchema)
       .optional(),

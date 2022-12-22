@@ -68,6 +68,19 @@ describe('Column Schema Checker', () => {
               type: 'date',
               value: api.cell.value,
             }),
+            parse: () => ({
+              value: 'bla',
+            }),
+          },
+          request: {
+            read: {
+              url: 'http://bla',
+              parse: () => ({
+                value: 'bla',
+              }),
+              method: 'get',
+              validate: () => true,
+            },
           },
         },
       } as ColumnSchema),

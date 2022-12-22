@@ -14,9 +14,26 @@ import { fromZodError } from 'zod-validation-error'
 function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
   const extensibleSchema = makeExtensibleSchema({})
   // add parameter to the function because, the underlying api.cell.value is not the same as form input
-  const form = makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema.or(DisplayStaticSchema), z.any())
+
   const recordCreator = makeFunctionWithAPICell(cellValueSchema, z.record(z.any()), z.any())
-  const CellRequestObject = z.object({
+
+  /**
+   * parse will be called prior to commiting the value, for ex: after user inputs from the cell or
+   * during import, the raw value will be passed to parse and the resulting value will be the result
+   * if save is not defined, then value wont be persisted in the database, for example, in a computed
+   * column.
+   */
+  const parse = makeFunctionWithAPICell(
+    cellValueSchema,
+    z.object({
+      value: z.any(),
+      store: z.any().optional(),
+      cache: z.any().optional(),
+    }),
+    z.any(),
+  ).optional()
+
+  const CellRequestObject = {
     // TODO: poll is not implemented yet
     url: z.union([makeFunctionWithAPICell(cellValueSchema, z.string()), z.string()]),
     /** request will only fire if validate() returns true */
@@ -24,7 +41,9 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
     params: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-  })
+    // result of the response
+    parse,
+  } as const
   return z.object({
     /** name of the column */
     name: z.string({
@@ -45,19 +64,7 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
       })
       .and(extensibleSchema)
       .optional(),
-    /**
-     * parse will be called prior to commiting the value, for ex: after user inputs from the cell or
-     * during import, the raw value will be passed to parse and the resulting value will be the result
-     */
-    parse: z
-      .object({
-        /**
-         * logic to parse, the first parameter is the api and the second is the raw value to be parsed
-         */
-        logic: makeFunctionWithAPICell(cellValueSchema, cellValueSchema.optional().nullable(), z.any()),
-      })
-      .and(extensibleSchema)
-      .optional(),
+
     /**
      * filtering capability of the column, the property of this object will be used as filter autocomplete token.
      * For example, { "=": {logic: (api, cellvalue) => api.value === cellvalue }}
@@ -91,20 +98,28 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
      */
     config: z.record(makeConfigSchema(cellValueSchema)).optional(),
     /** defines the source of the value, such as cell (user manually enter through the table) and more */
-    value: z
-      .discriminatedUnion('type', [
-        /** takes value from the user then pass the result parse() */
-        z.object({
-          type: z.literal('cell'),
-          form: form,
-        }),
-        /** request url then pass the result to parse() */
-        z.object({
-          type: z.literal('request'),
-          read: CellRequestObject.optional(),
-          write: CellRequestObject.and(z.object({ form })).optional(),
-        }),
-      ])
+    cell: z
+      .object({
+        // read request will always be watched
+        // if there is parse() then it will be saved in db
+
+        // result shows on display()
+        // click cell
+        // if defined show form
+        // enter value
+        // parse(form)
+        form: z
+          .object({
+            render: makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema.or(DisplayStaticSchema), z.any()),
+            parse,
+          })
+          .optional(), // shows form on edit
+        // request.hash will be watched, changes will send a request
+        // with the new parameters
+        read: z.object(CellRequestObject).optional(),
+        // after parse -> commit, will optionally send a POST to write
+        write: z.object(CellRequestObject).optional(), // shows form
+      })
       .and(extensibleSchema)
       .optional(),
   })

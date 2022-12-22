@@ -45,7 +45,7 @@ export function makeExtensibleSchema<T extends ZodRawShape>(shape: T) {
      * config: { lengthText: true}
      * after defining the config properties to access, then api.config.lengthText is available
      * */
-    config: z.record(z.any()).optional(),
+    // config: z.record(z.any()).optional(),
     ...shape,
   })
 }

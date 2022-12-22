@@ -9,10 +9,10 @@ export const ValueSchemaMapping = {
   number: [z.literal('number'), z.number()],
   boolean: [z.literal('boolean'), z.boolean()],
   column: [z.literal('column'), z.string()], // will be verified differently, must exist in table
-  'string[]': [z.literal('string[]'), z.array(z.string())],
-  'date[]': [z.literal('date[]'), z.array(z.date())],
-  'number[]': [z.literal('number[]'), z.array(z.number())],
-  'boolean[]': [z.literal('boolean[]'), z.array(z.boolean())],
+  strings: [z.literal('string[]'), z.array(z.string())],
+  dates: [z.literal('date[]'), z.array(z.date())],
+  numbers: [z.literal('number[]'), z.array(z.number())],
+  booleans: [z.literal('boolean[]'), z.array(z.boolean())],
 } as const
 
 function makeConfigItemColumnSchema<Value extends ZodType, ConfigType extends ZodType, ConfigValue extends ZodType>(
@@ -49,10 +49,10 @@ export function makeFilterSchema<V extends ZodType>(cellValueSchema: V) {
       makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['date']),
       makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['number']),
       makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['column']),
-      makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['string[]']),
-      makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['number[]']),
-      makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['boolean[]']),
-      makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['date[]']),
+      makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['strings']),
+      makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['numbers']),
+      makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['booleans']),
+      makeConfigItemColumnSchema(cellValueSchema, ...ValueSchemaMapping['dates']),
     ])
     .and(
       z.object({
@@ -85,16 +85,16 @@ export function makeConfigSchema<V extends ZodType>(valueSchema: V) {
       makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['column']).omit({
         logic: true,
       }),
-      makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['string[]']).omit({
+      makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['strings']).omit({
         logic: true,
       }),
-      makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['number[]']).omit({
+      makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['numbers']).omit({
         logic: true,
       }),
-      makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['date[]']).omit({
+      makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['dates']).omit({
         logic: true,
       }),
-      makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['boolean[]']).omit({
+      makeConfigItemColumnSchema(z.never(), ...ValueSchemaMapping['booleans']).omit({
         logic: true,
       }),
     ])

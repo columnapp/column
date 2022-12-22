@@ -41,10 +41,11 @@ describe('Column Schema Checker', () => {
             type: 'number',
           },
         },
-        parse: {
-          info: 'regular string parse',
-          logic: (api, raw: any) => String(raw),
-        },
+
+        // parse: {
+        //   info: 'regular string parse',
+        //   logic: (api, raw: any) => String(raw),
+        // },
         filters: {
           '=': {
             form: () => ({ type: 'number' }),
@@ -59,13 +60,15 @@ describe('Column Schema Checker', () => {
         events: {
           onCellDeleted: () => {},
         },
-        value: {
-          type: 'cell',
+
+        cell: {
           info: 'input is something funky',
-          form: (api) => ({
-            type: 'date',
-            value: api.cell.value,
-          }),
+          form: {
+            render: (api) => ({
+              type: 'date',
+              value: api.cell.value,
+            }),
+          },
         },
       } as ColumnSchema),
     ).not.toThrow()

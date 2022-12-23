@@ -2,6 +2,7 @@ export type { CellAPISchemaAny, ColumnAPISchemaAny } from 'schema/api'
 export type { DisplaySchema } from 'schema/display'
 export { DisplayInputSchema, DisplayConfigSchema as DisplayCellSchema } from 'schema/display/input'
 export { DisplayStaticSchema } from 'schema/display/static'
+import { CellAPISchemaAny, ColumnAPISchemaAny } from 'schema/api'
 import { DisplaySchema } from 'schema/display'
 import { DisplayInputSchema } from 'schema/display/input'
 import { DisplayStaticSchema } from 'schema/display/static'
@@ -31,6 +32,7 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
         value: z.any().optional(),
         store: z.any().optional(),
         cache: z.any().optional(),
+        values: z.any().optional(), // set all values for whole column
       })
       .nullable(),
     z.any(),
@@ -135,6 +137,8 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
 export const ColumnSchema = makeColumnV0_0_1(z.any())
 
 export type ColumnSchema = z.infer<typeof ColumnSchema>
+export type CellAPI = CellAPISchemaAny
+export type ColumnAPI = ColumnAPISchemaAny
 
 export class ColumnSchemaError extends Error {
   constructor(public issues: Array<ZodIssue>, public readable: any) {

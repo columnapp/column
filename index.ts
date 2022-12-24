@@ -40,8 +40,15 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     cellValueSchema,
     z
       .object({
-        // value key not defined write undefined or delete, to the cell
-        values: z.union([z.array(z.any()), z.record(z.any())]).optional(),
+        // values array means, just set the list regardless of the current value
+        // if it's record, then it's a merge with a defined cuid
+        values: z.object({
+          items: z.union([z.array(z.any()), z.record(z.any())]).optional(),
+          // if string, access as property of the values
+          // if function, call the function with (index, value), like Object.entries, returning the key
+          // the resulting key value needs to be consistent to make sure the right row is updated
+          key: z.union([z.string(), z.function().args(z.any(), z.string()).returns(z.string())]).optional(),
+        }),
         store: z.any().optional(),
         cache: z.any().optional(),
       })

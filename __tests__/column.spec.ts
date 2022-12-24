@@ -81,6 +81,16 @@ describe('Column Schema Checker', () => {
               method: 'get',
               validate: () => true,
             },
+            list: {
+              url: 'http://bla',
+              parse: () => ({
+                values: {
+                  items: [],
+                },
+              }),
+              method: 'get',
+              validate: () => true,
+            },
           },
         },
       } as ColumnSchema),

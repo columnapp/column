@@ -70,7 +70,6 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
     params: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-    parse: parseValue,
   } as const
   const ColumnRequestObject: { [K in keyof typeof CellRequestObject]: any } = {
     url: z.union([makeFunctionWithAPIColumn(cellValueSchema, z.string()), z.string()]),
@@ -78,8 +77,16 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
     params: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-    parse: parseValues,
   }
+  const refetchCellRequestObject = z
+    .object({ ...CellRequestObject, every: z.number() })
+    .partial()
+    .optional()
+  const refetchColumnRequestObject = z
+    .object({ ...ColumnRequestObject, every: z.number() })
+    .partial()
+    .optional()
+
   return z.object({
     /** name of the column */
     name: z.string({
@@ -154,15 +161,13 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
         // with the new parameters
         request: z
           .object({
-            read: z.object(CellRequestObject).optional(),
+            read: z.object({ ...CellRequestObject, parse: parseValue, refetch: refetchCellRequestObject }).optional(),
             // after parse -> commit, will optionally send a POST to write
-            write: z
-              .object(
-                CellRequestObject, // result of the response
-              )
-              .optional(),
+            write: z.object({ ...CellRequestObject, parse: parseValue }).optional(),
             // syncs whole column values
-            list: z.object(ColumnRequestObject).optional(),
+            list: z
+              .object({ ...ColumnRequestObject, parse: parseValues, refetch: refetchColumnRequestObject })
+              .optional(),
           })
           .optional(),
       })

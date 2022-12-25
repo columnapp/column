@@ -16,7 +16,10 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
   const extensibleSchema = makeExtensibleSchema({})
   // add parameter to the function because, the underlying api.cell.value is not the same as form input
 
-  const recordCreator = makeFunctionWithAPICell(cellValueSchema, z.record(z.any()), z.any())
+  const recordCreator = z.union([
+    makeFunctionWithAPICell(cellValueSchema, z.record(z.any()), z.any()),
+    z.record(z.any()),
+  ])
 
   /**
    * parse will be called prior to commiting the value, for ex: after user inputs from the cell or
@@ -67,7 +70,16 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
     params: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    parse: parseValue,
   } as const
+  const ColumnRequestObject: { [K in keyof typeof CellRequestObject]: any } = {
+    url: z.union([makeFunctionWithAPIColumn(cellValueSchema, z.string()), z.string()]),
+    validate: makeFunctionWithAPIColumn(cellValueSchema, z.boolean(), z.any()),
+    method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
+    params: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    parse: parseValues,
+  }
   return z.object({
     /** name of the column */
     name: z.string({
@@ -142,26 +154,15 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
         // with the new parameters
         request: z
           .object({
-            read: z
-              .object({
-                ...CellRequestObject,
-                parse: parseValue,
-              })
-              .optional(),
+            read: z.object(CellRequestObject).optional(),
             // after parse -> commit, will optionally send a POST to write
             write: z
-              .object({
-                ...CellRequestObject, // result of the response
-                parse: parseValue,
-              })
+              .object(
+                CellRequestObject, // result of the response
+              )
               .optional(),
             // syncs whole column values
-            list: z
-              .object({
-                ...CellRequestObject,
-                parse: parseValues,
-              })
-              .optional(),
+            list: z.object(ColumnRequestObject).optional(),
           })
           .optional(),
       })

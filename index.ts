@@ -71,7 +71,7 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     query: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     body: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-    type: z.union([z.literal('json'), z.literal('form')]).optional(),
+    type: z.union([z.literal('json'), z.literal('form')]).optional(), // defaults to json
   } as const
   const ColumnRequestObject: { [K in keyof typeof CellRequestObject]: any } = {
     url: z.union([makeFunctionWithAPIColumn(cellValueSchema, z.string()), z.string()]),

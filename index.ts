@@ -68,15 +68,19 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     /** request will only fire if validate() returns true */
     validate: makeFunctionWithAPICell(cellValueSchema, z.boolean(), z.any()),
     method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
-    params: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    query: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    body: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    type: z.union([z.literal('json'), z.literal('form')]).optional(),
   } as const
   const ColumnRequestObject: { [K in keyof typeof CellRequestObject]: any } = {
     url: z.union([makeFunctionWithAPIColumn(cellValueSchema, z.string()), z.string()]),
     validate: makeFunctionWithAPIColumn(cellValueSchema, z.boolean(), z.any()),
     method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
-    params: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    query: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    body: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    type: z.union([z.literal('json'), z.literal('form')]).optional(),
   }
   const refetchCellRequestObject = z
     .object({ ...CellRequestObject, every: z.number() })

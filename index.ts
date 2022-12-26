@@ -16,11 +16,14 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
   const extensibleSchema = makeExtensibleSchema({})
   // add parameter to the function because, the underlying api.cell.value is not the same as form input
 
-  const recordCreator = z.union([
+  const recordCreatorCell = z.union([
     makeFunctionWithAPICell(cellValueSchema, z.record(z.any()), z.any()),
     z.record(z.any()),
   ])
-
+  const recordCreatorColumn = z.union([
+    makeFunctionWithAPIColumn(cellValueSchema, z.record(z.any()), z.any()),
+    z.record(z.any()),
+  ])
   /**
    * parse will be called prior to commiting the value, for ex: after user inputs from the cell or
    * during import, the raw value will be passed to parse and the resulting value will be the result
@@ -61,27 +64,30 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
       .nullable(),
     z.any(),
   )
+  const url = z.union([makeFunctionWithAPICell(cellValueSchema, z.string()), z.string()])
+  const method = z.union([z.literal('post'), z.literal('get'), z.literal('put')])
+  const type = z.union([z.literal('json'), z.literal('form')]).optional()
 
   const CellRequestObject = {
     // TODO: poll is not implemented yet
-    url: z.union([makeFunctionWithAPICell(cellValueSchema, z.string()), z.string()]),
+    url,
+    method,
+    type,
     /** request will only fire if validate() returns true */
-    validate: makeFunctionWithAPICell(cellValueSchema, z.boolean(), z.any()),
-    method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
-    query: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-    body: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-    headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-    type: z.union([z.literal('json'), z.literal('form')]).optional(), // defaults to json
+    validate: makeFunctionWithAPICell(cellValueSchema, z.boolean()),
+    query: recordCreatorCell.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    body: recordCreatorCell.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    headers: recordCreatorCell.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
   } as const
-  const ColumnRequestObject: { [K in keyof typeof CellRequestObject]: any } = {
-    url: z.union([makeFunctionWithAPIColumn(cellValueSchema, z.string()), z.string()]),
-    validate: makeFunctionWithAPIColumn(cellValueSchema, z.boolean(), z.any()),
-    method: z.union([z.literal('post'), z.literal('get'), z.literal('put')]),
-    query: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-    body: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-    headers: recordCreator.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
-    type: z.union([z.literal('json'), z.literal('form')]).optional(),
-  }
+  const ColumnRequestObject = {
+    url,
+    method,
+    type,
+    validate: makeFunctionWithAPIColumn(cellValueSchema, z.boolean()),
+    query: recordCreatorColumn.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    body: recordCreatorColumn.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+    headers: recordCreatorColumn.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
+  } as const
   const refetchCellRequestObject = z
     .object({ ...CellRequestObject, every: z.number() })
     .partial()

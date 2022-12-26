@@ -90,6 +90,9 @@ describe('Column Schema Checker', () => {
               }),
               method: 'get',
               validate: () => true,
+              refetch: {
+                every: 2000,
+              },
             },
           },
         },

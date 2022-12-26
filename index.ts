@@ -39,7 +39,7 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
       .nullable(),
     z.any(),
   )
-  const parseValues = makeFunctionWithAPICell(
+  const parseValues = makeFunctionWithAPIColumn(
     cellValueSchema,
     z
       .object({

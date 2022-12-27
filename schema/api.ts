@@ -8,11 +8,12 @@ function makeCellValueAPI<V extends ZodType>(valueSchema: V) {
 }
 export function makeCellAPISchema<V extends ZodType>(valueSchema: V) {
   const rawCell = makeCellValueAPI(valueSchema)
+  const anyCell = makeCellValueAPI(z.any())
   return z.object({
     /** the value of the cell */
     cell: rawCell,
     /** the values of the column, keyed by cell id, includes self */
-    cells: z.record(rawCell.nullable()),
+    cells: z.record(anyCell.optional()),
     /** config values, only config defined by the config object will be accessible here */
     config: z.record(z.any()),
     /**
@@ -33,7 +34,7 @@ export function makeCellAPISchema<V extends ZodType>(valueSchema: V) {
      * config: {otherColumn: {form: {type: 'column'}}}
      * and then it can be accessed: api.column[api.config.otherColumn].value
      */
-    columns: z.record(makeCellValueAPI(z.any()).optional()),
+    columns: z.record(anyCell.optional()),
   })
 }
 export function makeColumnAPISchema<V extends ZodType>(valueSchema: V) {

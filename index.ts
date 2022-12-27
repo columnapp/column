@@ -52,9 +52,8 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
           .object({
             items: z.union([z.array(z.any()), z.record(z.any())]),
             // if string, access as property of the values
-            // if function, call the function with (index, value), like Object.entries, returning the key
-            // the resulting key value needs to be consistent to make sure the right row is updated
-            // default value is "id"
+            // if function, call the function with (value, index), returning the key
+            // if not defined, we will insert in order
             key: z.union([z.string(), z.function().args(z.any(), z.string()).returns(z.string())]).optional(),
           })
           .optional(),
@@ -65,7 +64,7 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     z.any(),
   )
   const url = z.union([makeFunctionWithAPICell(cellValueSchema, z.string()), z.string()])
-  const method = z.union([z.literal('post'), z.literal('get'), z.literal('put')])
+  const method = z.union([z.literal('post'), z.literal('get'), z.literal('put'), z.literal('patch')])
   const type = z.union([z.literal('json'), z.literal('form')]).optional()
 
   const CellRequestObject = {

@@ -35,12 +35,13 @@ describe('Column Schema Checker', () => {
         },
         config: {
           height: {
-            // label: 'Height',
+            label: 'Height',
+            info: 'height of the image',
             // form: (api) => ({ type: 'number', value: api.config.height }),
             // type: 'number',
             type: 'number',
-            parse: (api, raw: any) => Number(raw),
-            props: (api, value) => ({ value }),
+            parse: (_api, raw: any) => Number(raw),
+            props: (_api, value) => ({ value }),
           },
         },
 
@@ -49,18 +50,35 @@ describe('Column Schema Checker', () => {
             type: 'number',
             info: 'equal to',
             parse: (api, raw: any) => Number(raw),
-            props: (api, value) => ({
+            props: () => ({
               step: 0.1,
               value: 1,
             }),
+            filter: (api, value) => api.cell.value === value,
           },
         },
         events: {
           onCellDeleted: () => {},
         },
+        column: {
+          list: {
+            url: 'http://bla',
+            parse: () => ({
+              values: {
+                items: [],
+              },
+            }),
+            method: 'get',
+            validate: () => true,
+            refetch: {
+              every: 2000,
+            },
+          },
+        },
         cell: {
           info: 'input is something funky',
           form: {
+            info: 'input is something funky',
             type: 'date',
             parse: (value) => ({
               value,
@@ -75,19 +93,6 @@ describe('Column Schema Checker', () => {
               }),
               method: 'get',
               validate: () => true,
-            },
-            list: {
-              url: 'http://bla',
-              parse: () => ({
-                values: {
-                  items: [],
-                },
-              }),
-              method: 'get',
-              validate: () => true,
-              refetch: {
-                every: 2000,
-              },
             },
           },
         },
@@ -112,6 +117,7 @@ describe('Column Schema Checker', () => {
         },
         config: {
           height: {
+            info: 'height of the image',
             label: 'Height',
             type: 'number',
           },

@@ -1,8 +1,7 @@
-import { DisplayInputSchema } from 'schema/display/input'
 import { DisplayStaticSchema } from 'schema/display/static'
 import { z } from 'zod'
 //TODO: not used yet
-const LayoutItem = z.union([DisplayInputSchema, DisplayStaticSchema])
+// const LayoutItem = z.union([DisplayStaticSchema])
 export const LAYOUT_DISPLAY_SCHEMA = [
   z.object({
     type: z.literal('grid'),
@@ -19,14 +18,14 @@ export const LAYOUT_DISPLAY_SCHEMA = [
         order: z.number().optional(),
         span: z.union([z.number().optional(), z.literal('auto'), z.literal('content')]),
         offset: z.number().optional(),
-        content: LayoutItem,
+        // content: LayoutItem,
       }),
     ),
   }),
   z.object({
     type: z.literal('stack'),
     gap: z.number().optional(),
-    items: z.array(LayoutItem),
+    // items: z.array(LayoutItem),
   }),
 ] as const
 

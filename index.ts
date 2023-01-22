@@ -1,9 +1,18 @@
 export type { CellAPISchemaAny, ColumnAPISchemaAny } from 'schema/api'
-export type { DisplaySchema } from 'schema/display'
-export { DisplayConfigSchema as DisplayCellSchema, DisplayInputSchema } from 'schema/display/input'
 export { DisplayStaticSchema } from 'schema/display/static'
 import { CellAPISchemaAny, ColumnAPISchemaAny } from 'schema/api'
-import { DisplayConfigSchema, DisplayFilterSchema, DisplayInputSchema } from 'schema/display/input'
+import {
+  InputCheckboxFactory,
+  InputDateFactory,
+  InputNumberFactory,
+  InputSelectFactory,
+  InputTextFactory,
+  InputTimeFactory,
+  InputMonthFactory,
+  InputWeekFactory,
+  InputColorFactory,
+  InputRangeFactory,
+} from 'schema/display/input'
 import { DisplayStaticSchema } from 'schema/display/static'
 import { makeEventsSchema } from 'schema/events'
 import { makeParseValue, makeParseValues } from 'schema/parse'
@@ -79,7 +88,38 @@ function makeColumnV0_0_1() {
      * filtering capability of the column, the property of this object will be used as filter autocomplete token.
      * For example, { "=": {logic: (api, cellvalue) => api.value === cellvalue }}
      */
-    filters: z.record(extensibleSchema.and(DisplayFilterSchema)).optional(),
+    filters: z
+      .record(
+        extensibleSchema.and(
+          z.discriminatedUnion('type', [
+            InputTextFactory((value) => ({
+              filter: makeFunctionWithAPICell(z.boolean(), value),
+            })),
+            InputNumberFactory((value) => ({
+              filter: makeFunctionWithAPICell(z.boolean(), value),
+            })),
+            InputSelectFactory((value) => ({
+              filter: makeFunctionWithAPICell(z.boolean(), value),
+            })),
+            InputDateFactory((value) => ({
+              filter: makeFunctionWithAPICell(z.boolean(), value),
+            })),
+            InputTimeFactory((value) => ({
+              filter: makeFunctionWithAPICell(z.boolean(), value),
+            })),
+            InputWeekFactory((value) => ({
+              filter: makeFunctionWithAPICell(z.boolean(), value),
+            })),
+            InputCheckboxFactory((value) => ({
+              filter: makeFunctionWithAPICell(z.boolean(), value),
+            })),
+            InputMonthFactory((value) => ({
+              filter: makeFunctionWithAPICell(z.boolean(), value),
+            })),
+          ]),
+        ),
+      )
+      .optional(),
     /**
      * exposes the underlying data to be read by other columns
      * by default, there will always be "Value" exposed, which returns valueOf
@@ -106,7 +146,30 @@ function makeColumnV0_0_1() {
      * and in display: {config: {uppercase: true}}
      * inside of display.render(api), the api will have access to api.config.uppercase
      */
-    config: z.record(DisplayFilterSchema.or(DisplayConfigSchema)).optional(),
+    config: z
+      .record(
+        extensibleSchema.and(
+          z
+            .discriminatedUnion('type', [
+              InputTextFactory((value) => ({})),
+              InputNumberFactory((value) => ({})),
+              InputSelectFactory((value) => ({})),
+              InputDateFactory((value) => ({})),
+              InputTimeFactory((value) => ({})),
+              InputWeekFactory((value) => ({})),
+              InputCheckboxFactory((value) => ({})),
+              InputMonthFactory((value) => ({})),
+              InputColorFactory((value) => ({})),
+              InputRangeFactory((value) => ({})),
+            ])
+            .and(
+              z.object({
+                label: z.string(),
+              }),
+            ),
+        ),
+      )
+      .optional(),
     /** defines the source of the value, such as cell (user manually enter through the table) and more */
     column: z
       .object({
@@ -117,15 +180,16 @@ function makeColumnV0_0_1() {
       .object({
         // read request will always be watched
         // if there is parse() then it will be saved in db
-
-        // result shows on display()
-        // click cell
-        // if defined show form
-        // enter value
-        // parse(form)
-        form: DisplayInputSchema.optional(), // shows form on edit
-        // request.hash will be watc-hed, changes will send a request
-        // with the new parameters
+        form: z.discriminatedUnion('type', [
+          InputTextFactory(() => ({})),
+          InputNumberFactory(() => ({})),
+          InputSelectFactory(() => ({})),
+          InputDateFactory(() => ({})),
+          InputTimeFactory(() => ({})),
+          InputWeekFactory(() => ({})),
+          InputCheckboxFactory(() => ({})),
+          InputMonthFactory(() => ({})),
+        ]),
         request: z
           .object({
             read: z.object({ ...CellRequestObject, parse: parseValue, refetch: refetchCellRequestObject }).optional(),
@@ -161,8 +225,9 @@ export function ColumnSchemaCheck(obj: unknown) {
     return ColumnSchema.parse(obj)
   } catch (err: any) {
     if (err instanceof ZodError) {
-      const schemaError = new ColumnSchemaError(err.issues, fromZodError(err))
-      throw schemaError
+      // const schemaError = new ColumnSchemaError(err.issues, fromZodError(err))
+      // throw schemaError
+      throw err
     }
   }
 }

@@ -173,31 +173,32 @@ function makeColumnV0_0_1() {
       )
       .optional(),
     /** defines the source of the value, such as cell (user manually enter through the table) and more */
-    column: z
-      .object({
-        list: z.object({ ...ColumnRequestObject, parse: parseValues, refetch: refetchColumnRequestObject }).optional(),
-      })
-      .optional(),
+
     cell: z
       .object({
         // read request will always be watched
         // if there is parse() then it will be saved in db
-        form: z.discriminatedUnion('type', [
-          InputTextFactory(() => ({})),
-          InputNumberFactory(() => ({})),
-          InputSelectFactory(() => ({})),
-          InputDateFactory(() => ({})),
-          InputTimeFactory(() => ({})),
-          InputWeekFactory(() => ({})),
-          InputCheckboxFactory(() => ({})),
-          InputMonthFactory(() => ({})),
-        ]),
+        form: z
+          .discriminatedUnion('type', [
+            InputTextFactory(() => ({})),
+            InputNumberFactory(() => ({})),
+            InputSelectFactory(() => ({})),
+            InputDateFactory(() => ({})),
+            InputTimeFactory(() => ({})),
+            InputWeekFactory(() => ({})),
+            InputCheckboxFactory(() => ({})),
+            InputMonthFactory(() => ({})),
+          ])
+          .optional(),
         request: z
           .object({
             read: z.object({ ...CellRequestObject, parse: parseValue, refetch: refetchCellRequestObject }).optional(),
             // after parse -> commit, will optionally send a POST to write
             write: z.object({ ...CellRequestObject, parse: parseValue }).optional(),
             // syncs whole column values
+            list: z
+              .object({ ...ColumnRequestObject, parse: parseValues, refetch: refetchColumnRequestObject })
+              .optional(),
           })
           .optional(),
       })

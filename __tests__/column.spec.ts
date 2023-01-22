@@ -121,6 +121,11 @@ describe('Column Schema Checker', () => {
             label: 'Height',
             type: 'number',
           },
+          connect: {
+            type: 'column',
+            label: 'Connect',
+            info: 'connect to another column',
+          },
         },
         value: {
           type: 'request',

@@ -1,3 +1,4 @@
+import { InputCheckboxFactory } from 'schema/display/input'
 import { makeFunctionWithAPICell } from 'schema/shared'
 import { z } from 'zod'
 
@@ -23,6 +24,7 @@ export const STATIC_SCHEMA_TYPES = [
       }),
     ),
   }),
+  InputCheckboxFactory(() => ({})).omit({ parse: true }),
   z.object({
     type: z.literal('sparkline'),
     props: makeFunctionWithAPICell(

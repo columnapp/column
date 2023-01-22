@@ -28,7 +28,7 @@ describe('Column Schema Checker', () => {
         primitive: (api) => (api.cell.value == null ? '' : api.cell.value),
         display: {
           info: 'shows image',
-          type: 'string',
+          type: 'checkbox',
           props(api) {
             return { text: api.cell.value }
           },

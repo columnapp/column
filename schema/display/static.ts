@@ -8,7 +8,7 @@ export const STATIC_SCHEMA_TYPES = [
     type: z.literal('string'),
     props: makeFunctionWithAPICell(
       z.object({
-        text: z.string().nullable(),
+        value: z.string().nullable(),
       }),
     ),
   }),
@@ -30,7 +30,7 @@ export const STATIC_SCHEMA_TYPES = [
     props: makeFunctionWithAPICell(
       z.object({
         type: z.literal('line').or(z.literal('bar')).default('line'),
-        points: z.array(z.number()),
+        value: z.array(z.number()),
         color: z.string().optional(),
         yaxis: z.tuple([z.number(), z.number()]).optional(),
         labels: z.array(z.string()).optional(),
@@ -52,7 +52,7 @@ export const STATIC_SCHEMA_TYPES = [
     type: z.literal('tags'),
     props: makeFunctionWithAPICell(
       z.object({
-        items: z
+        value: z
           .array(z.string())
           .or(z.array(z.object({ label: z.string(), img: z.string() })))
           .nullable(),
@@ -63,7 +63,8 @@ export const STATIC_SCHEMA_TYPES = [
     type: z.literal('link'),
     props: makeFunctionWithAPICell(
       z.object({
-        href: z.string().nullable(),
+        label: z.string().nullable(),
+        value: z.string().nullable(),
       }),
     ),
   }),
@@ -71,13 +72,16 @@ export const STATIC_SCHEMA_TYPES = [
     type: z.literal('img'),
     props: makeFunctionWithAPICell(
       z.object({
-        height: z.number().optional(),
-        src: z.array(z.string()).nullable(),
+        value: z.array(z.string()).nullable(),
         round: z.number().optional(),
       }),
     ),
   }),
 ] as const
 
-export const DisplayStaticSchema = z.discriminatedUnion('type', [...STATIC_SCHEMA_TYPES])
+export const DisplayStaticSchema = z.discriminatedUnion('type', [...STATIC_SCHEMA_TYPES]).and(
+  z.object({
+    height: z.number().optional(),
+  }),
+)
 export type DisplayStaticSchema = z.infer<typeof DisplayStaticSchema>

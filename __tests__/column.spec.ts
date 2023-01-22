@@ -111,7 +111,7 @@ describe('Column Schema Checker', () => {
           type: 'img',
           props: (api) => {
             return {
-              src: api.cell.value,
+              value: api.cell.value,
             }
           },
         },

@@ -1,19 +1,19 @@
 import { makeFunctionWithAPICell } from 'schema/shared'
 import { z, ZodType } from 'zod'
 
-function makeEventCallback<V extends ZodType>(valueSchema: V, extra = z.void()) {
-  return makeFunctionWithAPICell(valueSchema, extra, z.any()).optional()
+function makeEventCallback(extra = z.void()) {
+  return makeFunctionWithAPICell(extra, z.any()).optional()
 }
-export function makeEventsSchema<V extends ZodType>(valueSchema: V) {
+export function makeEventsSchema() {
   return z.object({
     /** after the cell is created */
-    onCellCreated: makeEventCallback(valueSchema),
+    onCellCreated: makeEventCallback(),
     /** after parse is called, value is set, then this event gets called */
-    onCellUpdated: makeEventCallback(valueSchema),
+    onCellUpdated: makeEventCallback(),
     /** after the cell is delete, api.value is the last value prior to deletion */
-    onCellDeleted: makeEventCallback(valueSchema),
+    onCellDeleted: makeEventCallback(),
     /** on config updated */
-    onConfigUpdated: makeEventCallback(valueSchema),
+    onConfigUpdated: makeEventCallback(),
   })
 }
 export type EventSchemaAny = keyof ReturnType<typeof makeEventsSchema>

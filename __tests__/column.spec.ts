@@ -20,7 +20,7 @@ describe('Column Schema Checker', () => {
       ColumnSchemaCheck({ type: 'string.0.0.1', info: 'wawa', display: { type: 'textblabla' } }),
     ).toThrowError()
   })
-  it('checks valid schemas', () => {
+  it('checks valid schemas 1', () => {
     expect(() =>
       ColumnSchemaCheck({
         name: 'test column',
@@ -28,49 +28,44 @@ describe('Column Schema Checker', () => {
         primitive: (api) => (api.cell.value == null ? '' : api.cell.value),
         display: {
           info: 'shows image',
-          config: {},
-          render: (api) => ({
-            type: 'img',
-            value: api.cell.value,
-          }),
+          type: 'string',
+          props(api) {
+            return { text: api.cell.value }
+          },
         },
         config: {
           height: {
-            label: 'Height',
-            form: (api) => ({ type: 'number', value: api.config.height }),
+            // label: 'Height',
+            // form: (api) => ({ type: 'number', value: api.config.height }),
+            // type: 'number',
             type: 'number',
+            parse: (api, raw: any) => Number(raw),
+            props: (api, value) => ({ value }),
           },
         },
 
-        // parse: {
-        //   info: 'regular string parse',
-        //   logic: (api, raw: any) => String(raw),
-        // },
         filters: {
           '=': {
-            form: () => ({ type: 'number' }),
-            info: 'just straight equal',
-            label: 'Equals',
             type: 'number',
-            logic() {
-              return true
-            },
+            info: 'equal to',
+            parse: (api, raw: any) => Number(raw),
+            props: (api, value) => ({
+              step: 0.1,
+              value: 1,
+            }),
           },
         },
         events: {
           onCellDeleted: () => {},
         },
-
         cell: {
           info: 'input is something funky',
           form: {
-            render: (api) => ({
-              type: 'date',
-              value: api.cell.value,
+            type: 'date',
+            parse: (value) => ({
+              value,
             }),
-            parse: () => ({
-              value: 'bla',
-            }),
+            props: (api, value) => ({ value }),
           },
           request: {
             read: {
@@ -99,7 +94,7 @@ describe('Column Schema Checker', () => {
       } as ColumnSchema),
     ).not.toThrow()
   })
-  it('checks valid schemas', () => {
+  it('checks valid schemas 2', () => {
     expect(() =>
       ColumnSchemaCheck({
         name: 'test column',
@@ -108,19 +103,19 @@ describe('Column Schema Checker', () => {
         type: 'boolean',
         display: {
           info: 'shows image',
-          config: {},
-          render: () => ({
-            type: 'img',
-          }),
+          type: 'img',
+          props: (api) => {
+            return {
+              src: api.cell.value,
+            }
+          },
         },
         config: {
           height: {
             label: 'Height',
-            form: (api) => ({ type: 'number', value: api.config.height }),
             type: 'number',
           },
         },
-
         value: {
           type: 'request',
           info: 'input is something funky',

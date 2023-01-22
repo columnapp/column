@@ -17,7 +17,6 @@ export const DisplaySchema = z
   .union([
     DisplayInputSchema,
     DisplayStaticSchema,
-    DisplayLayoutSchema,
     // this object recurses, so need to add it later
   ])
   .and(

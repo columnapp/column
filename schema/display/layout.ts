@@ -1,6 +1,7 @@
 import { DisplayInputSchema } from 'schema/display/input'
 import { DisplayStaticSchema } from 'schema/display/static'
 import { z } from 'zod'
+//TODO: not used yet
 const LayoutItem = z.union([DisplayInputSchema, DisplayStaticSchema])
 export const LAYOUT_DISPLAY_SCHEMA = [
   z.object({

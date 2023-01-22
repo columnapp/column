@@ -1,69 +1,34 @@
 export type { CellAPISchemaAny, ColumnAPISchemaAny } from 'schema/api'
 export type { DisplaySchema } from 'schema/display'
-export { DisplayInputSchema, DisplayConfigSchema as DisplayCellSchema } from 'schema/display/input'
+export { DisplayConfigSchema as DisplayCellSchema, DisplayInputSchema } from 'schema/display/input'
 export { DisplayStaticSchema } from 'schema/display/static'
 import { CellAPISchemaAny, ColumnAPISchemaAny } from 'schema/api'
-import { DisplaySchema } from 'schema/display'
-import { DisplayInputSchema } from 'schema/display/input'
+import { DisplayConfigSchema, DisplayFilterSchema, DisplayInputSchema } from 'schema/display/input'
 import { DisplayStaticSchema } from 'schema/display/static'
 import { makeEventsSchema } from 'schema/events'
-import { makeConfigSchema, makeFilterSchema } from 'schema/option'
-import { makeFunctionWithAPICell, makeExtensibleSchema, makeFunctionWithAPIColumn } from 'schema/shared'
-import { z, ZodError, ZodIssue, ZodType } from 'zod'
+import { makeParseValue, makeParseValues } from 'schema/parse'
+import { makeFunctionWithAPICell, makeFunctionWithAPIColumn } from 'schema/shared'
+import { z, ZodError, ZodIssue } from 'zod'
 import { fromZodError } from 'zod-validation-error'
 
-function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
-  const extensibleSchema = makeExtensibleSchema({})
+function makeColumnV0_0_1() {
+  const extensibleSchema = z.object({
+    info: z.string(),
+  })
   // add parameter to the function because, the underlying api.cell.value is not the same as form input
 
-  const recordCreatorCell = z.union([
-    makeFunctionWithAPICell(cellValueSchema, z.record(z.any()), z.any()),
-    z.record(z.any()),
-  ])
-  const recordCreatorColumn = z.union([
-    makeFunctionWithAPIColumn(cellValueSchema, z.record(z.any()), z.any()),
-    z.record(z.any()),
-  ])
+  const recordCreatorCell = z.union([makeFunctionWithAPICell(z.record(z.any()), z.any()), z.record(z.any())])
+  const recordCreatorColumn = z.union([makeFunctionWithAPIColumn(z.record(z.any()), z.any()), z.record(z.any())])
   /**
    * parse will be called prior to commiting the value, for ex: after user inputs from the cell or
    * during import, the raw value will be passed to parse and the resulting value will be the result
    * if save is not defined, then value wont be persisted in the database, for example, in a computed
    * column.
    */
-  const parseValue = makeFunctionWithAPICell(
-    cellValueSchema,
-    z
-      .object({
-        // value key not defined write undefined or delete, to the cell
-        value: z.any().optional(),
-        store: z.any().optional(),
-        cache: z.any().optional(),
-      })
-      .nullable(),
-    z.any(),
-  )
-  const parseValues = makeFunctionWithAPIColumn(
-    cellValueSchema,
-    z
-      .object({
-        // values array means, just set the list regardless of the current value
-        // if it's record, then it's a merge with a defined cuid
-        values: z
-          .object({
-            items: z.union([z.array(z.any()), z.record(z.any())]),
-            // if string, access as property of the values
-            // if function, call the function with (value, index), returning the key
-            // if not defined, we will insert in order
-            key: z.union([z.string(), z.function().args(z.any(), z.string()).returns(z.string())]).optional(),
-          })
-          .optional(),
-        store: z.any().optional(),
-        cache: z.any().optional(),
-      })
-      .nullable(),
-    z.any(),
-  )
-  const url = z.union([makeFunctionWithAPICell(cellValueSchema, z.string()), z.string()])
+  const parseValue = makeParseValue(z.any(), z.any())
+  const parseValues = makeParseValues(z.any(), z.any())
+
+  const url = z.union([makeFunctionWithAPICell(z.string()), z.string()])
   const method = z.union([z.literal('post'), z.literal('get'), z.literal('put'), z.literal('patch')])
   const type = z.union([z.literal('json'), z.literal('form')]).optional()
 
@@ -73,7 +38,7 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     method,
     type,
     /** request will only fire if validate() returns true */
-    validate: makeFunctionWithAPICell(cellValueSchema, z.boolean()),
+    validate: makeFunctionWithAPICell(z.boolean()),
     query: recordCreatorCell.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     body: recordCreatorCell.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     headers: recordCreatorCell.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
@@ -82,7 +47,7 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     url,
     method,
     type,
-    validate: makeFunctionWithAPIColumn(cellValueSchema, z.boolean()),
+    validate: makeFunctionWithAPIColumn(z.boolean()),
     query: recordCreatorColumn.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     body: recordCreatorColumn.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
     headers: recordCreatorColumn.optional(), // can refer to other columns, for use case of SKU in one column -> price column by SKU
@@ -105,23 +70,16 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
     info: z.string(),
     /** primitive data type representation of the value, used for sorting, grouping, etc */
     primitive: makeFunctionWithAPICell(
-      cellValueSchema,
       z.union([z.number(), z.null(), z.string(), z.boolean(), z.undefined(), z.bigint()]),
     ),
     /** dictates how the column displays the data in cells */
-    display: z
-      .object({
-        /** the logic on how the cell renders data */
-        render: makeFunctionWithAPICell(cellValueSchema, DisplaySchema),
-      })
-      .and(extensibleSchema)
-      .optional(),
+    display: DisplayStaticSchema.and(extensibleSchema).optional(),
 
     /**
      * filtering capability of the column, the property of this object will be used as filter autocomplete token.
      * For example, { "=": {logic: (api, cellvalue) => api.value === cellvalue }}
      */
-    filters: z.record(extensibleSchema.and(makeFilterSchema(cellValueSchema))).optional(),
+    filters: z.record(extensibleSchema.and(DisplayFilterSchema)).optional(),
     /**
      * exposes the underlying data to be read by other columns
      * by default, there will always be "Value" exposed, which returns valueOf
@@ -132,13 +90,13 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
           .object({
             label: z.string().optional(),
             /** returns the value */
-            returns: makeFunctionWithAPICell(cellValueSchema, z.any()),
+            returns: makeFunctionWithAPICell(z.any()),
           })
           .and(extensibleSchema),
       )
       .optional(),
     /** callback for various events */
-    events: makeEventsSchema(cellValueSchema).optional(),
+    events: makeEventsSchema().optional(),
     /**
      * allows end user to configure the column. Each of the config defined here will be accessible in various parts of the column.
      * Example: define config:
@@ -148,8 +106,13 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
      * and in display: {config: {uppercase: true}}
      * inside of display.render(api), the api will have access to api.config.uppercase
      */
-    config: z.record(makeConfigSchema(cellValueSchema)).optional(),
+    config: z.record(DisplayFilterSchema.or(DisplayConfigSchema)).optional(),
     /** defines the source of the value, such as cell (user manually enter through the table) and more */
+    column: z
+      .object({
+        list: z.object({ ...ColumnRequestObject, parse: parseValues, refetch: refetchColumnRequestObject }).optional(),
+      })
+      .optional(),
     cell: z
       .object({
         // read request will always be watched
@@ -160,13 +123,8 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
         // if defined show form
         // enter value
         // parse(form)
-        form: z
-          .object({
-            render: makeFunctionWithAPICell(cellValueSchema, DisplayInputSchema.or(DisplayStaticSchema), z.any()),
-            parse: parseValue,
-          })
-          .optional(), // shows form on edit
-        // request.hash will be watched, changes will send a request
+        form: DisplayInputSchema.optional(), // shows form on edit
+        // request.hash will be watc-hed, changes will send a request
         // with the new parameters
         request: z
           .object({
@@ -174,9 +132,6 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
             // after parse -> commit, will optionally send a POST to write
             write: z.object({ ...CellRequestObject, parse: parseValue }).optional(),
             // syncs whole column values
-            list: z
-              .object({ ...ColumnRequestObject, parse: parseValues, refetch: refetchColumnRequestObject })
-              .optional(),
           })
           .optional(),
       })
@@ -185,15 +140,19 @@ function makeColumnV0_0_1<V extends ZodType>(cellValueSchema: V) {
   })
 }
 
-export const ColumnSchema = makeColumnV0_0_1(z.any())
+export const ColumnSchema = makeColumnV0_0_1()
 
 export type ColumnSchema = z.infer<typeof ColumnSchema>
+
 export type CellAPI = CellAPISchemaAny
 export type ColumnAPI = ColumnAPISchemaAny
 
 export class ColumnSchemaError extends Error {
   constructor(public issues: Array<ZodIssue>, public readable: any) {
     super()
+  }
+  toString() {
+    return this.readable
   }
 }
 

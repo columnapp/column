@@ -1,6 +1,11 @@
+import { makeParseValue } from 'schema/parse'
+import { makeFunctionWithAPICell } from 'schema/shared'
 import { z } from 'zod'
 
-function createInputSchema<T extends string, K extends Record<string, z.ZodSchema>>(type: T, props: K) {
+function createInputSchema<T extends string, K extends Record<string, z.ZodSchema> & { value: z.ZodSchema }>(
+  type: T,
+  props: K,
+) {
   return z.object({
     /** type of input the render */
     type: z.literal(type),
@@ -9,21 +14,25 @@ function createInputSchema<T extends string, K extends Record<string, z.ZodSchem
     /** value of the input,  if defined statically, it will be automatically injected with api.value, ex:
      * display: render: {type: 'text'} will automatically have value as api.value
      */
-    value: z.any().optional(),
-    ...props,
+    props: makeFunctionWithAPICell(
+      z.object({ ...props, value: props.value.nullable() }),
+      props.value.nullable(),
+    ).optional(),
+    parse: makeParseValue(props.value, props.value.nullable()).optional(),
   })
 }
 export const FILTER_INPUT_TYPES = [
-  createInputSchema('text', { minlength: z.number().optional(), maxlength: z.number().optional() }),
-  createInputSchema('month', {}),
-  createInputSchema('time', {}),
-  createInputSchema('number', { step: z.string().optional() }),
-  createInputSchema('date', {}),
+  createInputSchema('text', { value: z.string(), minlength: z.number().optional(), maxlength: z.number().optional() }),
+  createInputSchema('month', { value: z.date() }),
+  createInputSchema('time', { value: z.date() }),
+  createInputSchema('number', { step: z.number().optional(), value: z.number() }),
+  createInputSchema('date', { value: z.date() }),
   createInputSchema('select', {
     multiple: z.boolean().default(false).optional(),
+    value: z.string().or(z.array(z.string())),
     options: z.array(z.object({ value: z.any(), label: z.string().optional() })),
   }),
-  createInputSchema('week', {}),
+  createInputSchema('week', { value: z.date() }),
   createInputSchema('checkbox', { value: z.boolean().optional() }),
 ] as const
 // text, month, number, date, checkbox, select
@@ -32,11 +41,18 @@ export const CONFIG_INPUT_TYPES = [
   //standard ---------------------------------------------:
   // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input#attr-list
 
-  createInputSchema('color', {}),
-  createInputSchema('button', { label: z.string() }),
-  createInputSchema('range', { min: z.number(), max: z.number(), step: z.number().default(1).optional() }),
+  createInputSchema('color', { value: z.string() }),
+  // createInputSchema('button', { label: z.string() }),
+  createInputSchema('range', {
+    min: z.number(),
+    max: z.number(),
+    step: z.number().default(1).optional(),
+    value: z.number(),
+  }),
   // non standard ----------------------------------------
-  createInputSchema('column', {}),
+  createInputSchema('column', {
+    value: z.string(),
+  }),
 
   // based off of imask ------------------------------------
   // createInputSchema('mask-regex', { regex: z.string() }),

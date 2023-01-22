@@ -12,6 +12,7 @@ import {
   InputWeekFactory,
   InputColorFactory,
   InputRangeFactory,
+  InputColumn,
 } from 'schema/display/input'
 import { DisplayStaticSchema } from 'schema/display/static'
 import { makeEventsSchema } from 'schema/events'
@@ -161,6 +162,7 @@ function makeColumnV0_0_1() {
               InputMonthFactory((value) => ({})),
               InputColorFactory((value) => ({})),
               InputRangeFactory((value) => ({})),
+              InputColumn,
             ])
             .and(
               z.object({

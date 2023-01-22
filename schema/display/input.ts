@@ -52,9 +52,11 @@ export const InputRangeFactory = createInputFactory('range', {
   value: z.number(),
 })
 
-export const InputColumnFactory = createInputFactory('column', {
+const InputColumnFactory = createInputFactory('column', {
   value: z.string(),
 })
+export const InputColumn = InputColumnFactory(() => ({})).omit({ parse: true, props: true, error: true })
+
 // based off of imask ------------------------------------
 // createInputSchema('mask-regex', { regex: z.string() }),
 // createInputSchema('mask-number', {

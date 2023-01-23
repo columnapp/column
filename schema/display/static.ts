@@ -9,8 +9,9 @@ export const STATIC_SCHEMA_TYPES = [
     props: makeFunctionWithAPICell(
       z.object({
         value: z.string().nullable(),
+        height: z.number().optional(),
       }),
-    ),
+    ).optional(),
   }),
   z.object({
     type: z.literal('range'),
@@ -21,8 +22,9 @@ export const STATIC_SCHEMA_TYPES = [
         step: z.number().default(1),
         label: z.string().optional(),
         value: z.number(),
+        height: z.number().optional(),
       }),
-    ),
+    ).optional(),
   }),
   InputCheckboxFactory(() => ({})).omit({ parse: true }),
   z.object({
@@ -34,8 +36,9 @@ export const STATIC_SCHEMA_TYPES = [
         color: z.string().optional(),
         yaxis: z.tuple([z.number(), z.number()]).optional(),
         labels: z.array(z.string()).optional(),
+        height: z.number().optional(),
       }),
-    ),
+    ).optional(),
   }),
   z.object({
     type: z.literal('button'),
@@ -44,9 +47,10 @@ export const STATIC_SCHEMA_TYPES = [
         label: z.string(),
         round: z.number().optional(),
         color: z.union([z.literal('primary'), z.literal('secondary')]).optional(),
+        height: z.number().optional(),
         onClick: z.function().optional(),
       }),
-    ),
+    ).optional(),
   }),
   z.object({
     type: z.literal('tags'),
@@ -56,8 +60,9 @@ export const STATIC_SCHEMA_TYPES = [
           .array(z.string())
           .or(z.array(z.object({ label: z.string(), img: z.string() })))
           .nullable(),
+        height: z.number().optional(),
       }),
-    ),
+    ).optional(),
   }),
   z.object({
     type: z.literal('link'),
@@ -65,6 +70,7 @@ export const STATIC_SCHEMA_TYPES = [
       z.object({
         label: z.string().nullable(),
         value: z.string().nullable(),
+        height: z.number().optional(),
       }),
     ),
   }),
@@ -74,14 +80,11 @@ export const STATIC_SCHEMA_TYPES = [
       z.object({
         value: z.array(z.string()).nullable(),
         round: z.number().optional(),
+        height: z.number().optional(),
       }),
-    ),
+    ).optional(),
   }),
 ] as const
 
-export const DisplayStaticSchema = z.discriminatedUnion('type', [...STATIC_SCHEMA_TYPES]).and(
-  z.object({
-    height: z.number().optional(),
-  }),
-)
+export const DisplayStaticSchema = z.discriminatedUnion('type', [...STATIC_SCHEMA_TYPES])
 export type DisplayStaticSchema = z.infer<typeof DisplayStaticSchema>

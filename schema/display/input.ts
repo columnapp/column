@@ -16,6 +16,7 @@ function createInputFactory<T extends string, K extends Record<string, z.ZodSche
         props.value.nullable(),
       ).optional(),
       parse: makeParseValue(props.value, props.value.nullable()).optional(),
+      height: z.number().optional(),
       ...extend(props.value),
     })
   }
